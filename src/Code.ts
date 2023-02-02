@@ -15,21 +15,22 @@ function sendMonthlyWCBDIEmail() {
     static millisecondsInOneWeek = TimeFacts.millisecondsInOneDay * TimeFacts.daysInOneWeek
   }
   
+  type DateStringOrNumber = Date|string|number
+
   class CustomDate{
-    /** @param {Date|string|number} date */
-    static of(date){
-      return new CustomDate(new Date(date), new TimeFacts())
+    fullDate:Date
+    dateAsMilliseconds:number
+    
+    static of(date:DateStringOrNumber){
+      return new CustomDate(new Date(date))
     }
-  
-    /** @param {Date} date @param {TimeFacts} timeFacts */
-    constructor(date, timeFacts){
+
+    constructor(date:Date){
       this.fullDate = date
       this.dateAsMilliseconds = date.valueOf()
-      this.time = timeFacts
     }
   
-    /** @private @return {String}*/
-    get day(){
+    get day():string{
       const day = this.fullDate.getDay()
       const daysDict = {
         0: "Sunday",
@@ -43,8 +44,7 @@ function sendMonthlyWCBDIEmail() {
       return daysDict[day]
     }
   
-    /** @return {String} */
-    get month(){
+    get month():string{
       const month = this.fullDate.getMonth()
       const monthsDict = {
         0: "January",
@@ -63,67 +63,56 @@ function sendMonthlyWCBDIEmail() {
       return monthsDict[month]
     }
   
-    /** @private */
-    get date(){
+    private get date(){
       return this.fullDate.getDate()
     }
   
-    /** @private */
-    get fullYear(){
+    private get fullYear(){
       return this.fullDate.getFullYear()
     }
   
-    /** @private */
-    getsTheNextDay(){
-      const nextDay = CustomDate.of(this.dateAsMilliseconds + this.time.millisecondsInOneDay)
+    private getsTheNextDay(){
+      const nextDay = CustomDate.of(this.dateAsMilliseconds + TimeFacts.millisecondsInOneDay)
       return nextDay
     }
   
-    /** @private @param {CustomDate} date */
-    static getsDateOneWeekLater(date){
+    private static getsDateOneWeekLater(date:CustomDate){
       return date.getsDateOneWeekLater()
     }
   
-    /** @return {CustomDate}*/
-    getsDateOneWeekLater(){
-      return CustomDate.of( this.dateAsMilliseconds + this.time.millisecondsInOneWeek)
+    getsDateOneWeekLater():CustomDate{
+      return CustomDate.of( this.dateAsMilliseconds +  TimeFacts.millisecondsInOneWeek)
     }
   
     /** @private */
-    isADayOff(){
+    private isADayOff(){
       return this.dateIsOnTheWeekend() || this.dateIsAHoliday()
     }
   
-    /** @private */
-    dateIsOnTheWeekend(){
+    private dateIsOnTheWeekend(){
       const day = this.day
       return day == "Saturday" || day == "Sunday"
     }
   
-    /** @private */
-    dateIsAHoliday(){
+    private dateIsAHoliday(){
       const holidayOnDate = getHolidayDatesBetween(this.fullDate, this.getsTheNextDay().fullDate)
         .filter( holidayDate => holidayDate == this.fullDate.getDate())
       return holidayOnDate.length > 0
   
-      /** @template {Date|string|number} A, B @param{A} startDate, @param{B} endDate */
-      function getHolidaysBetween(startDate, endDate){
+      function getHolidaysBetween(startDate:DateStringOrNumber, endDate:DateStringOrNumber){
         return CalendarApp.getCalendarsByName('UU Days Off')[0].getEvents(new Date(startDate), new Date(endDate))
       }
   
-      /** @template {Date|string|number} A, B @param{A} startDate, @param{B} endDate */
-      function getHolidayDatesBetween(startDate, endDate){
+      function getHolidayDatesBetween(startDate:DateStringOrNumber, endDate:DateStringOrNumber){
         return getHolidaysBetween(startDate, endDate).map(holiday => holiday.getAllDayStartDate().getDate())
       }
     }
   
-    /** @param {function(CustomDate):CustomDate} customDateFn */
-    getsDeadline(customDateFn){
+    getsDeadline(customDateFn:(customDate: CustomDate) => CustomDate){
       const deadlineDate = validateDate(this, customDateFn)
       return `${deadlineDate.day}, ${deadlineDate.month} ${deadlineDate.date}, ${deadlineDate.fullYear}`
   
-      /** @param {CustomDate} date @param {function(CustomDate):CustomDate} customDateFn @return {CustomDate} */
-      function validateDate(date, customDateFn){
+      function validateDate(date:CustomDate, customDateFn:(customDate: CustomDate) => CustomDate){
         const deadlineDate = customDateFn(date)
         return deadlineDate.isADayOff() ? validateDate(date.getsTheNextDay(), customDateFn) : deadlineDate
       }
@@ -135,8 +124,7 @@ function sendMonthlyWCBDIEmail() {
   }
   
   class EmailTemplate{
-    /** @param {CustomDate} date @param {HtmlFormatter} htmlFormatter */
-    static create(date, htmlFormatter){
+    static create(date:CustomDate, htmlFormatter:HtmlFormatter){
       const htmlBody = htmlFormatter.buildHtmlBody(
         EmailTemplate.getGreeting(),
         ...EmailTemplate.getBodyParagraphs(date, htmlFormatter), 
@@ -146,16 +134,14 @@ function sendMonthlyWCBDIEmail() {
       return {name:"Oliver Allen-Cummings", htmlBody}
     }
   
-    /** @private */
-    static getGreeting(){
+    private static getGreeting(){
       const emailGreeting = 'Hi team,'
       return emailGreeting
     }
   
-    /** @private @param{CustomDate} date @param{HtmlFormatter} htmlFormatter */
-    static getBodyParagraphs(date, htmlFormatter){
+    private static getBodyParagraphs(date:CustomDate, htmlFormatter:HtmlFormatter){
       const requirementsDoc = DriveApp.getFileById('1bZwt67lF79O21aXniSIlXNgZcrsYFKEkz8haewUQYac')
-      const emailBodyText = [   ``
+      const emailBodyText = [   ``,
         `Please send me any services you have for ${date.month}. It would be great if you could share by the end of the day ${date.getsOneWeekDeadline()}.`, 
         `As a reminder, ${htmlFormatter.makeHtmlLink(`here's a list of the info I'll need to record any TA or Education services.`, requirementsDoc.getUrl())}`
       ]
@@ -163,16 +149,13 @@ function sendMonthlyWCBDIEmail() {
       return emailBodyParagraphs
     }
   
-    /** @private @param{HtmlFormatter} htmlFormatter */
-    static getClosing(htmlFormatter){
+    private static getClosing(htmlFormatter:HtmlFormatter){
       const lineBreak = htmlFormatter.addLineBreak()
       const emailClosing = `Thanks,${lineBreak}Oliver`
       return emailClosing
     }
   
-  
-    /** @private */
-    static getMySignature(){
+    private static getMySignature(){
       return `<div dir="ltr"><img src="https://i.pinimg.com/originals/c2/51/aa/c251aaaa400eb6fef7e56b602d6f95bd.jpg" width="96" height="78"><br><div><b>Oliver Allen-Cummings</b></div><div>Program Coordinator, Worker Cooperative Program</div><div>4-25 Astoria Blvd.</div><div>Astoria, NY 11102</div><div>Phone: 718-784-0877</div><div><a href="http://urbanupbound.org/" style="color:rgb(17,85,204);font-size:13.3333px" target="_blank">urbanupbound.org</a><br></div><div><a href="https://www.facebook.com/urbanupboundny/" target="_blank"><img src="https://cdn.exclaimer.com/Handbook%20Images/facebook-icon_32x32.png?_ga=2.195531820.1874837458.1618585022-1466277378.1618585022"></a>&nbsp;<a href="https://twitter.com/urbanupbound_ny" target="_blank"><img src="https://cdn.exclaimer.com/Handbook%20Images/twitter-icon_32x32.png?_ga=2.195531820.1874837458.1618585022-1466277378.1618585022"></a>&nbsp;<a href="http://instagram.com/urbanupbound_ny" target="_blank"><img src="https://cdn.exclaimer.com/Handbook%20Images/instagram-icon_32x32.png?_ga=2.195531820.1874837458.1618585022-1466277378.1618585022"></a>&nbsp;<a href="https://www.youtube.com/channel/UCmHQdYYrZkABaVIm1Xt8wXw" target="_blank"><img src="https://cdn.exclaimer.com/Handbook%20Images/youtube-icon_32x32.png?_ga=2.195531820.1874837458.1618585022-1466277378.1618585022"></a>&nbsp;<a href="https://urbanupbound.medium.com/" target="_blank"><img src="https://cdn.exclaimer.com/Handbook%20Images/Medium_32.png?_ga=2.157257915.1874837458.1618585022-1466277378.1618585022"></a><br></div></div>`
     }
   }
@@ -180,22 +163,20 @@ function sendMonthlyWCBDIEmail() {
   class HtmlFormatter{
     constructor(){}
   
-    /** @param {...string} content */
-    buildHtmlBody(...content){
+    buildHtmlBody(...content: string[]):string{
       return content.join("")
     }
   
-    /** @param {string} text */
-    makeHtmlParagraph(text){
+    makeHtmlParagraph(text:string):string{
       return `<p>${text}<\p>`
     }
   
     /** @param {string} text @param {string} url */
-    makeHtmlLink(text, url){
+    makeHtmlLink(text:string, url:string):string{
       return `<a href=${url}>${text}<\a>`
     }
   
-    addLineBreak(){
+    addLineBreak():string{
       return `<br>`
     }
   }
