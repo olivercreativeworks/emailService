@@ -2,6 +2,10 @@ import { CustomDate } from "./CustomDate"
 import { HtmlFormatter } from "./HtmlFormatter"
 import { EmailTemplate } from "./EmailTemplate"
 
+function doGet(){
+  return HtmlService.createTemplateFromFile('index').evaluate()
+}
+
 function sendMonthlyWCBDIEmail() {
     const date = CustomDate.of(new Date())
     Logger.log('Sending Email')
