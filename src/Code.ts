@@ -1,3 +1,7 @@
+import { CustomDate } from "./CustomDate"
+import { HtmlFormatter } from "./HtmlFormatter"
+import { EmailTemplate } from "./EmailTemplate"
+
 function sendMonthlyWCBDIEmail() {
     const date = CustomDate.of(new Date())
     Logger.log('Sending Email')

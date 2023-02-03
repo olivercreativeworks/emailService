@@ -1,4 +1,4 @@
-class HtmlFormatter{
+export class HtmlFormatter{
     constructor(){}
   
     buildHtmlBody(...content: string[]):string{

@@ -1,1 +1,1 @@
-type DateStringOrNumber = Date|string|number
+export type DateStringOrNumber = Date|string|number

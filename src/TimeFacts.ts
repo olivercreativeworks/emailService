@@ -1,4 +1,4 @@
-class TimeFacts{
+export class TimeFacts{
     static millisecondsInOneSecond = 1000
     static secondsInOneMinute = 60
     static minutesInOneHour = 60

@@ -1,4 +1,7 @@
-class CustomDate{
+import { TimeFacts } from "./TimeFacts"
+import { DateStringOrNumber } from "./UtilityTypes"
+
+export class CustomDate{
     fullDate:Date
     dateAsMilliseconds:number
     
