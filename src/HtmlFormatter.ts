@@ -6,12 +6,12 @@ export class HtmlFormatter{
     }
   
     makeHtmlParagraph(text:string):string{
-      return `<p>${text}<\p>`
+      return `<p>${text}</p>`
     }
   
     /** @param {string} text @param {string} url */
     makeHtmlLink(text:string, url:string):string{
-      return `<a href=${url}>${text}<\a>`
+      return `<a href="${url}">${text}</a>`
     }
   
     addLineBreak():string{
