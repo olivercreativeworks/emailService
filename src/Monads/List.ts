@@ -4,7 +4,7 @@ interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
 }
 
 export class List<Value>{
-    $value: Value[]
+    private $value: Value[]
 
     constructor(value: Value[]){
         this.$value = value
@@ -24,6 +24,31 @@ export class List<Value>{
         return List.fromArr(this.$value.map(fn))
     }
 
+    filter(fn:(value:Value) => boolean): List<Value>{
+        return List.fromArr(this.$value.filter(fn))
+    }
+
+    join<A>(this:List<List<A>>): List<A>{
+        return this.reduce((prev:List<A>, curr:List<A>) => prev.concat(curr.$value))
+    }
+
+    flatMap<B>(fn:(value:Value) => List<B>): List<B>{
+        return this.map(fn).join()
+    }
+    private static valueIsNotNothing(x:any):boolean{
+        return !(isNothing(x))
+
+        function isNothing(x:any):boolean{
+            return x == null || x == undefined
+        }
+    }
+
+    compactMap<B>(fn:(value:Value) => B, filterFn:(x:B) => boolean = List.valueIsNotNothing): List<B>{
+        return this.map(fn).filter(filterFn)
+        
+        
+    }
+    
     concat(...items: (Value | ConcatArray<Value>) []){
         return List.fromArr(this.$value.concat(...items))
     }
@@ -48,4 +73,17 @@ export class List<Value>{
         return this.traverse(of,this.identity)
     }
 
+    asArray():Array<Value>{
+        return this.$value
+    }
+
 }
+
+export function toList<A>(list:List<A>, value:A):List<A>{
+    return list.concat(value)
+}
+
+console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
+console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().flatMap(x => List.of(x+1, x+2)))
+console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => x%2 == 0 ? List.of(x+1, x+2) : null))
+console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().compactMap(x => x%2 == 0 ? List.of(x+1, x+2) : null).join())

@@ -3,8 +3,8 @@ import { MonadDefinitions } from "./Interfaces"
 interface Monad<Value> extends MonadDefinitions.Monad<Value>{
 }
 
-export class Maybe<Value>{
-    $value?:Value
+export class Maybe<Value> implements Monad<Value>{
+    private $value?:Value
     
     static of<A>(x:A):Maybe<A>{
         return new Maybe(x)
@@ -24,8 +24,12 @@ export class Maybe<Value>{
         this.$value = x
     }
 
-    isNothing():Boolean{
+    isNothing():boolean{
         return this.$value == null || this.$value == undefined
+    }
+
+    isSomething():boolean{
+        return !(this.isNothing())
     }
 
     @Maybe.ignoreOperationIfValueIsNothing
@@ -38,12 +42,12 @@ export class Maybe<Value>{
         return Maybe.of(this.$value.$value)
     }
 
-    flatmap<A>(fn:(value:Value) => Maybe<A>): Maybe<A>{
+    flatMap<A>(fn:(value:Value) => Maybe<A>): Maybe<A>{
         return this.map(fn).join()
     }
 
     @Maybe.ignoreOperationIfValueIsNothing
-    filter(fn:(value:Value) => Boolean): Maybe<Value>{
+    filter(fn:(value:Value) => boolean): Maybe<Value>{
         return fn(this.$value) ? this : Maybe.of(null)
     }
 
@@ -63,5 +67,17 @@ export class Maybe<Value>{
 
     sequence<A, B extends Monad<Maybe<A>>>(this: Maybe<Monad<A>>, of: (value: Maybe<A>) => B ):B{
         return this.traverse(this.identity, of)
+    }
+
+    unsafeUnwrap():Value{
+        return this.$value
+    }
+
+    orElseGet<A>(fn:() => A): A | Value{
+        return this.isSomething() ? this.$value : fn()
+    }
+
+    orElse<A>(defaultValue:A): A | Value{
+        return this.isSomething() ? this.$value : defaultValue
     }
 }

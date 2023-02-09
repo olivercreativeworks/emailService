@@ -1,6 +1,14 @@
 import { CustomDate } from "./CustomDate"
 import { HtmlFormatter } from "./HtmlFormatter"
-import { EmailTemplate } from "./EmailTemplate"
+// import { EmailTemplate } from "./EmailTemplate"
+
+function callTesting(){
+  // Logger.log(getHtmlEmailWithSignature())
+
+  myTest4('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo')
+  // testingzzz('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo')
+  // testingPipe()
+}
 
 function doGet(){
   return HtmlService.createTemplateFromFile('index').evaluate()
