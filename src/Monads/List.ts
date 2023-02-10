@@ -83,7 +83,7 @@ export function toList<A>(list:List<A>, value:A):List<A>{
     return list.concat(value)
 }
 
-console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
-console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().flatMap(x => List.of(x+1, x+2)))
-console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => x%2 == 0 ? List.of(x+1, x+2) : null))
-console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().compactMap(x => x%2 == 0 ? List.of(x+1, x+2) : null).join())
+// console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
+// console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().flatMap(x => List.of(x+1, x+2)))
+// console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => x%2 == 0 ? List.of(x+1, x+2) : null))
+// console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().compactMap(x => x%2 == 0 ? List.of(x+1, x+2) : null).join())

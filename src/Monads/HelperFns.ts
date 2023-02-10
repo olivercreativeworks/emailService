@@ -7,6 +7,7 @@ type Monad<Value> = MonadDefinitions.Monad<Value>
 export class Helper{
     static map<A,B>(fn:(value:A) => B):typeof $map{
         return $map
+        function $map(arr: Array<A>):Array<B>
         function $map(listMonad:List<A>):List<B>
         function $map(maybeMonad:Maybe<A>):Maybe<B>
         function $map<C>(monad:{map: (fn:(value:A)=>B)=>C}): C{
