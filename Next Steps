@@ -1,0 +1,15 @@
+Put files onto git
+Update the date in the wcbdi email dynamically
+Create a file for our signature
+Clean up files
+
+//https://stackoverflow.com/questions/48892283/typescript-overload-considers-only-one-of-the-overloaded-signatures
+// typescript overloads do not work well when returning functions
+function base<A>(x:number):typeof giveYouResult{
+    return giveYouResult
+    function giveYouResult(second:Array<A>): number
+    function giveYouResult(second:List<A>):string
+    function giveYouResult(second:any): any{
+        return x
+    }
+}
