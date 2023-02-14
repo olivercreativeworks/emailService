@@ -1,7 +1,11 @@
-import { Email, EmailOptions } from "../Interfaces/Email";
+// import { Email, EmailOptions } from "../Interfaces/Email";
 import { Maybe } from "../Monads/Maybe";
 import { GmailOptionsObject, OmitHtmlBody, EmailTemplateCreator } from "../Interfaces/Email";
 
+interface EmailSender<TemplateType>{
+    customSendFn:(email:Email) => Email
+    send(t:TemplateType):void
+}
 
 class GmailOptions implements EmailOptions{
     recipient: string
