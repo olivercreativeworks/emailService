@@ -3,6 +3,9 @@ import { MonadDefinitions } from "./Interfaces"
 interface Monad<Value> extends MonadDefinitions.Monad<Value>{
 }
 
+export type UnwrapMaybe<A extends Maybe<unknown>> = ReturnType<A["unsafeUnwrap"]>
+
+
 export class Maybe<Value> implements Monad<Value>{
     private $value?:Value
     
@@ -80,4 +83,8 @@ export class Maybe<Value> implements Monad<Value>{
     orElse<A>(defaultValue:A): A | Value{
         return this.isSomething() ? this.$value : defaultValue
     }
+}
+
+export function isSomething<A>(maybe:Maybe<A>):boolean{
+    return maybe.isSomething()
 }

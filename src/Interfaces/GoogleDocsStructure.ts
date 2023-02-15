@@ -1,8 +1,21 @@
-export interface DocsLink{
-    url?:string
+export interface DocsDocument{
+    body?:DocsBody
 }
-export interface DocsTextStyle{
-    link?:DocsLink
+
+export interface DocsBody{
+    content?:Array<DocsBodyContent>
+}
+
+export interface DocsBodyContent{
+    paragraph?:DocsParagraph
+}
+
+export interface DocsParagraph{
+    elements?:Array<DocsParagraphElement>
+}
+
+export interface DocsParagraphElement{
+    textRun?:DocsTextRun
 }
 
 export interface DocsTextRun{
@@ -10,26 +23,22 @@ export interface DocsTextRun{
     textStyle?:DocsTextStyle
 }
 
-export interface DocsHtmlTextRun{
-    textRun:DocsTextRun
-    asHtmlString: string
+export interface DocsTextStyle{
+    link?:DocsLink
 }
 
-export interface DocsParagraphElement{
-    textRun?:DocsTextRun
-}
-export interface DocsParagraph{
-    elements?:Array<DocsParagraphElement>
+export interface DocsLink{
+    url?:string
 }
 
-export interface DocsBodyContent{
-    paragraph?:DocsParagraph
-}
 
-export interface DocsBody{
-    content?:Array<DocsBodyContent>
-}
 
-export interface DocsDocument{
-    body?:DocsBody
-}
+
+
+
+
+
+
+
+
+

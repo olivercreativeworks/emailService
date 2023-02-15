@@ -1,11 +1,12 @@
 import { EmailConstructor } from "./Classes/EmailConstructor"
-import { DocumentToHtmlMapper } from "./Classes/HtmlMapper"
+// import { DocumentToHtmlMapper } from "./Classes/HtmlMapper"
 import { GmailTemplate } from "./Classes/EmailTemplates"
-import { CustomEmail } from "./Classes/CustomEmail"
+// import { CustomEmail } from "./Classes/CustomEmail"
 import { MyDocument } from "./Classes/DocumentStructure"
 
 function callTesting(){
-  myTest4('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo')
+  // myTest4('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo')
+  buildMyDocz()
 }
 
 function myTest4(docId){
