@@ -1,4 +1,4 @@
-import { CustomEmail } from "../Classes/CustomEmail" 
+import { CustomEmail } from "./CustomEmail" 
 
 export type EmailSender<A> = (email:A) => void
 export type EmailOptionsMapper<A> = (options: EmailOptions) => A 

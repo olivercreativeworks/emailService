@@ -1,8 +1,8 @@
 import { Maybe } from "../Monads/Maybe"
-import { EmailSender } from "../Interfaces/Email"
-import { EmailOptionsMapper } from "../Interfaces/Email"
-import { EmailOptions } from "../Interfaces/Email"
-import { Email, EmailTemplate } from "../Interfaces/Email"
+import { EmailSender } from "./Email"
+import { EmailOptionsMapper } from "./Email"
+import { EmailOptions } from "./Email"
+import { Email, EmailTemplate } from "./Email"
 
 export class CustomEmail<TemplateType> implements Email, EmailTemplate<TemplateType>{
     private options: Maybe<TemplateType>

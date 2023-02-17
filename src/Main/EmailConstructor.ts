@@ -1,6 +1,6 @@
-import { MyDocument } from "./DocumentStructure"
+import { Document } from "./DocumentStructure"
 import { Maybe } from "../Monads/Maybe"
-// import { HtmlMapper } from "../Interfaces/HtmlMapper"
+import { MyHtmlMapper } from "./HtmlMapper"
 
 
 export interface EmailTemplate<TemplateType>{
@@ -35,19 +35,19 @@ export interface EmailTemplateCreator{
 
 
 export class EmailConstructor<TemplateType extends EmailOptions>{
-    private htmlMapper:HtmlMapper
+    private htmlMapper:MyHtmlMapper
     private emailTemplate: CustomEmail<TemplateType>
 
-    constructor(x:HtmlMapper, emailTemplate:CustomEmail<TemplateType>){
+    constructor(x:MyHtmlMapper, emailTemplate:CustomEmail<TemplateType>){
         this.htmlMapper = x
         this.emailTemplate = emailTemplate
     }
 
-    of(x:HtmlMapper,emailTemplate:CustomEmail<TemplateType>):EmailConstructor<TemplateType>{
+    of(x:MyHtmlMapper,emailTemplate:CustomEmail<TemplateType>):EmailConstructor<TemplateType>{
         return new EmailConstructor(x, emailTemplate)
     }
 
-    createEmailHtmlFromDocument(document:MyDocument, recipient, subject, otherOptions:Omit<Partial<EmailOptions>, "recipient" | "subject"> ={}):CustomEmail<TemplateType>{
+    createEmailHtmlFromDocument(document:Document, recipient, subject, otherOptions:Omit<Partial<EmailOptions>, "recipient" | "subject"> ={}):CustomEmail<TemplateType>{
         const html = this.htmlMapper.mapFromDocument(document).map(appendSignatureHtml)
         const email = this.emailTemplate.populateTemplate({recipient, subject, htmlBody:html.orElse(null), ...otherOptions})
         return email

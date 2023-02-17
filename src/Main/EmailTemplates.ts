@@ -1,6 +1,6 @@
 // import { Email, EmailOptions } from "../Interfaces/Email";
 import { Maybe } from "../Monads/Maybe";
-import { GmailOptionsObject, OmitHtmlBody, EmailTemplateCreator } from "../Interfaces/Email";
+import { GmailOptionsObject, OmitHtmlBody, EmailTemplateCreator } from "./Email";
 
 interface EmailSender<TemplateType>{
     customSendFn:(email:Email) => Email
