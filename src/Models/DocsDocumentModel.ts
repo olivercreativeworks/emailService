@@ -1,4 +1,4 @@
-import { DocsInlineObjectElement, DocsInlineObjectsModel } from "./DocsInlineObjectModel"
+import { DocsInlineObjectElement, DocsInlineObjectModel, DocsInlineObjectsModel } from "./DocsInlineObjectModel"
 
 export interface DocsDocumentModel{
     body?:DocsBodyModel
