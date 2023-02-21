@@ -31,7 +31,11 @@ export class SimplifiedDocsDocument implements SimpleDocsDocumentModel{
         }
         
         function getTextRuns(paragraphElements: List<List<DocsParagraphElementModel>>):Maybe<List<List<DocsTextRunModel>>>{
-            return paragraphElements.map( elements => elements.map( element => Maybe.of(element.textRun)).sequence(Maybe.of)).sequence(Maybe.of)
+            return paragraphElements.map($getTextRuns).sequence(Maybe.of)
+        
+            function $getTextRuns(elements: List<DocsParagraphElementModel>): Maybe<List<DocsTextRunModel>>{
+                return elements.compactMap( element => Maybe.of(element.textRun), isSomething).sequence(Maybe.of)
+            }
         }
     }
 
@@ -47,6 +51,5 @@ export class SimplifiedDocsDocument implements SimpleDocsDocumentModel{
         return Maybe.of(this.document.body)
             .map(body => body.content)
             .map(bodyContent => bodyContent.reduce(toList, List.fromArr(Array<DocsBodyContentModel>())))
-        }
-        
+        }       
     }
