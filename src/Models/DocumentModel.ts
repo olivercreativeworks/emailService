@@ -1,5 +1,6 @@
-import { Maybe, UnwrapMaybe } from "../Monads/Maybe"
+import { Maybe } from "../Monads/Maybe"
 import { List } from "../Monads/List"
+import { OptionalProps } from "./Utility"
 
 
 export interface IDocument<BaseUnit>{
@@ -18,6 +19,30 @@ export interface ITextRun{
     url:Maybe<string>
 }
 
+export interface IInlineImage{
+    imageSourceUrl:Maybe<string>
+    url:Maybe<string>
+}
+
+export interface IParagraphElement{
+    textRun:Maybe<ITextRun>
+    inlineImage: Maybe<IInlineImage>
+}
+interface ParagraphElementOptions extends OptionalProps<IParagraphElement>{
+}
+
+export class ParagraphElement implements IParagraphElement{
+    textRun: Maybe<ITextRun>
+    inlineImage: Maybe<IInlineImage>
+    
+    constructor(options: ParagraphElementOptions){
+        this.textRun = Maybe.of(options.textRun)
+        this.inlineImage = Maybe.of(options.inlineImage)
+    }
+    static of(textRun?: ITextRun, inlineImage?:IInlineImage): ParagraphElement{
+        return new ParagraphElement({textRun, inlineImage})
+    }
+}
 
 export class Document<BaseUnit> implements IDocument<BaseUnit>{
     paragraphs: List<IParagraph<BaseUnit>>
@@ -35,10 +60,10 @@ export class Document<BaseUnit> implements IDocument<BaseUnit>{
     }
 
     mapParagraphBaseUnit<A>(fn: (baseUnit: BaseUnit) => A): Document<A>{
-        return Document.of(this.paragraphs.map( paragraph => paragraph.map(fn)))
+        return Document.of(this.paragraphs.compactMap( paragraph => paragraph.map(fn)))
     }
     map<A>(fn: (baseUnit: IParagraph<BaseUnit>) => IParagraph<A>): Document<A>{
-        return Document.of(this.paragraphs.map(fn))
+        return Document.of(this.paragraphs.compactMap(fn))
     }
 }
 
@@ -54,15 +79,13 @@ class Paragraph<BaseUnit> implements IParagraph<BaseUnit>{
     }
 
     map<A>(fn: (baseUnit: BaseUnit) => A): Paragraph<A>{
-        return Paragraph.of(this.$baseUnits.map(fn))
+        return Paragraph.of(this.$baseUnits.compactMap(fn))
     }
 }
 
-type UnwrapProps<WrappedProp> = {
-    [x in keyof WrappedProp] : WrappedProp[x] extends Maybe<unknown> ? UnwrapMaybe<WrappedProp[x]> : WrappedProp[x]
-}
-type UnwrapedTextRun = UnwrapProps<ITextRun>
-type TextRunOptions = Partial<UnwrapedTextRun>
+
+
+type TextRunOptions = OptionalProps<ITextRun>
 interface ITextRunOptions extends TextRunOptions{
 }
 
@@ -77,5 +100,23 @@ export class TextRun implements ITextRun{
 
     static of(text:string, url?:string){
         return new TextRun({text, url})
+    }
+}
+
+type InlineImageOptions = OptionalProps<IInlineImage>
+interface IInlineImageOptions extends InlineImageOptions{
+}
+
+export class InlineImage implements IInlineImage{
+    imageSourceUrl: Maybe<string>
+    url: Maybe<string>
+
+    constructor(options: IInlineImageOptions){
+        this.imageSourceUrl = Maybe.of(options.imageSourceUrl)
+        this.url = Maybe.of(options.url)
+    }
+
+    static of(imageSourceUrl:string, url?:string){
+        return new InlineImage({imageSourceUrl, url})
     }
 }
