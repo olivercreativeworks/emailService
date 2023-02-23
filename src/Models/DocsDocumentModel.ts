@@ -1,4 +1,4 @@
-import { DocsInlineObjectElement, DocsInlineObjectModel, DocsInlineObjectsModel } from "./DocsInlineObjectModel"
+import { DocsInlineObjectElementModel, $DocsInlineObjectModel, DocsInlineObjectsModel } from "./DocsInlineObjectModel"
 
 export interface DocsDocumentModel{
     body?:DocsBodyModel
@@ -19,7 +19,7 @@ export interface DocsParagraphModel{
 
 export interface DocsParagraphElementModel{
     textRun?:DocsTextRunModel
-    inlineObjectElement?:DocsInlineObjectElement
+    inlineObjectElement?:DocsInlineObjectElementModel
 }
 
 export interface DocsTextRunModel{
