@@ -1,7 +1,7 @@
-import { DocsLinkModel } from "./DocsDocumentModel"
-export type DocsInlineObjectsModel = Record<string, DocsInlineObjectModel>
+import { DocsLinkModel, DocsTextStyleModel } from "./DocsDocumentModel"
+export type DocsInlineObjectsModel = Record<string, $DocsInlineObjectModel>
 
-export interface DocsInlineObjectModel{
+export interface $DocsInlineObjectModel{
     objectId?: string
     inlineObjectProperties?: DocsInlineObjectPropertiesModel
 }
@@ -12,14 +12,28 @@ export interface DocsInlineObjectPropertiesModel{
 
 export interface DocsEmbeddedObjectModel{
     imageProperties?: DocsImagePropertiesModel
+    size?:DocsInlineObjectSize
 }
 
 export interface DocsImagePropertiesModel{
     contentUri?: string
 }
 
-export interface DocsInlineObjectElement{
+export interface DocsInlineObjectElementModel{
     inlineObjectId?: string
-    link?: DocsLinkModel
+    textStyle?: DocsTextStyleModel
 }
+
+export interface DocsInlineObjectSize{
+    height?:Magnitude
+    width?:Magnitude
+}
+
+type magnitudeUnits = "PT"
+interface Magnitude{
+    magnitude?: number
+    unit?: magnitudeUnits
+}
+
+
 
