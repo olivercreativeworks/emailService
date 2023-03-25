@@ -83,6 +83,10 @@ export function toList<A>(list:List<A>, value:A):List<A>{
     return list.concat(value)
 }
 
+export function reduceToList<A>(arr:Array<A>):List<A>{
+    return arr.reduce(toList, List.fromArr(Array<A>()))
+}
+
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().flatMap(x => List.of(x+1, x+2)))
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => x%2 == 0 ? List.of(x+1, x+2) : null))
