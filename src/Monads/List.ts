@@ -61,7 +61,7 @@ export class List<Value>{
         return initialValue ? this.$value.reduce(fn, initialValue) : this.$value.reduce(fn)
     }
 
-    traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(this:List<Applicative<A>>, of:(value:List<A>) => B, fn: (value: Value)=> C): B{
+    traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(of:(value:List<A>) => B, fn: (value: Value)=> C): B{
         return this.reduce( (intial, curr) => intial.map(list => (value:A) => list.concat(value)).ap(fn(curr as Value)) as B, of(List.fromArr([])))
     }
 
@@ -81,6 +81,10 @@ export class List<Value>{
 
 export function toList<A>(list:List<A>, value:A):List<A>{
     return list.concat(value)
+}
+
+export function reduceToList<A>(arr:Array<A>):List<A>{
+    return arr.reduce(toList, List.fromArr(Array<A>()))
 }
 
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))

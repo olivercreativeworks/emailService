@@ -2,6 +2,7 @@
     "compilerOptions": {
       "lib": ["esnext"],
       "target": "ES2019",
-      "experimentalDecorators": true
+      "experimentalDecorators": true,
+      "esModuleInterop": true,
     }
 }

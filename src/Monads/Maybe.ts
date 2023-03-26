@@ -3,6 +3,11 @@ import { MonadDefinitions } from "./Interfaces"
 interface Monad<Value> extends MonadDefinitions.Monad<Value>{
 }
 
+
+export type UnwrapMaybe<A extends Maybe<unknown>> = ReturnType<A["unsafeUnwrap"]>
+
+
+
 export class Maybe<Value> implements Monad<Value>{
     private $value?:Value
     
@@ -80,4 +85,34 @@ export class Maybe<Value> implements Monad<Value>{
     orElse<A>(defaultValue:A): A | Value{
         return this.isSomething() ? this.$value : defaultValue
     }
+}
+
+export function isSomething<A>(maybe:Maybe<A>):boolean{
+    return maybe.isSomething()
+}
+
+export function unsafeUnwrap<A>(maybe:Maybe<A>):A{
+    return maybe.unsafeUnwrap()
+}
+
+export function maybe<A,B>(valueIfMaybeIsNothing:B, fnToApply:(value:A) => B,  maybeValue:Maybe<A>):B{
+    return maybeValue.map(fnToApply).orElse(valueIfMaybeIsNothing)
+}
+
+interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
+}
+
+export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
+export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>{
+    return applicative1.map(fn).ap(applicative2)
+}
+
+export function curryA2<A,B,C>(fn:(arg1:A, arg2:B) => C): (arg1:A) => (arg2:B) => C{
+    return (arg1:A) => (arg2:B) => fn(arg1, arg2)
+}
+
+export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
+export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>
+export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1, applicative2){
+    return liftA2(curryA2(fn), applicative1, applicative2)
 }
