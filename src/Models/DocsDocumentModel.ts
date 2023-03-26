@@ -1,4 +1,4 @@
-import { DocsInlineObjectElementModel, $DocsInlineObjectModel, DocsInlineObjectsModel } from "./DocsInlineObjectModel"
+import { DocsInlineObjectsModel } from "./DocsInlineObjectModel"
 
 export interface DocsDocumentModel{
     body?:DocsBodyModel
@@ -33,6 +33,11 @@ export interface DocsTextStyleModel{
 
 export interface DocsLinkModel{
     url?:string
+}
+
+export interface DocsInlineObjectElementModel{
+    inlineObjectId?: string
+    textStyle?: DocsTextStyleModel
 }
 
 
