@@ -21,11 +21,11 @@ export class List<Value>{
     // typecasting 
     // https://www.typescripttutorial.net/typescript-tutorial/type-casting/
     map<B>(fn:(value:Value) => B): List<B> {
-        return List.fromArr(this.$value.map(fn))
+        return List.fromArr(this.$value.map(value =>  fn(value)))
     }
 
     filter(fn:(value:Value) => boolean): List<Value>{
-        return List.fromArr(this.$value.filter(fn))
+        return List.fromArr(this.$value.filter(value => fn(value)))
     }
 
     join<A>(this:List<List<A>>): List<A>{
@@ -58,7 +58,7 @@ export class List<Value>{
     reduce(fn:(initialValue:Value, currentValue:Value) => Value, initialValue?:Value):Value
     reduce<A>(fn:(initialValue:A, currentValue:Value) => A, initialValue:A):A
     reduce(fn:(initialValue, currentValue) => any, initialValue?:any) {
-        return initialValue ? this.$value.reduce(fn, initialValue) : this.$value.reduce(fn)
+        return initialValue ? this.$value.reduce((value, currVal) => fn(value, currVal), initialValue) : this.$value.reduce((value, currVal) => fn(value, currVal))
     }
 
     traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(of:(value:List<A>) => B, fn: (value: Value)=> C): B{
