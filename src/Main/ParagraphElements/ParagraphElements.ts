@@ -1,6 +1,7 @@
 import { DocsParagraphElementModel, DocsDocumentModel, DocsParagraphModel, DocsBodyContentModel } from "../../Models/DocsDocumentModel"
 import { List, reduceToList } from "../../Monads/List"
 import { Maybe, isSomething } from "../../Monads/Maybe"
+import { HtmlParagraph } from "../Email"
 import { ImageHtmlMapper } from "./Image"
 import { TextRunHtmlMapper } from "./TextRun"
 
@@ -34,7 +35,7 @@ export class DocsDocsDocumentAsMultipleParagraphs{
     }
 }
 
-export type wrapInParagraphTagFn = (text:string) => string
+export type wrapInParagraphTagFn = (text:string) => HtmlParagraph
 
 
 export interface ParagraphHtmlWrapper{
