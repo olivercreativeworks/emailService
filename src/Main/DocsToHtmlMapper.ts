@@ -9,15 +9,24 @@ import { ImageHtmlMapper, createImageHtmlFn, Image } from "./ParagraphElements/I
 import { DocsDocsDocumentAsMultipleParagraphs, Paragraph, ParagraphElementHtmlMapper, ParagraphHtmlWrapper, wrapInParagraphTagFn } from "./ParagraphElements/ParagraphElements";
 import { TextRunHtmlMapper, createTextRunHtmlFn, TextRun } from "./ParagraphElements/TextRun";
 import { documentContentToHtmlMapper } from "./src";
+import { HtmlParagraph } from "./Email";
+
 
 export class DocsToHtmlMapper{
-    static docToHtml(docsDocument:DocsDocumentModel, mapper:documentContentToHtmlMapper = HtmlMapper3.createHtml):Maybe<string>{
+    static docToHtml(docsDocument:DocsDocumentModel, mapper:documentContentToHtmlMapper = HtmlMapper3.createHtml):Maybe<HtmlParagraph>{
         return DocsDocsDocumentAsMultipleParagraphs.getParagraphs(docsDocument)
             .map(paragraphs => mapper(paragraphs, docsDocument?.inlineObjects))
     }
     
-    static concatDocs(...docs:DocsDocumentModel[]):string{
-        return docs.reduce((str:string, doc:DocsDocumentModel) => DocsToHtmlMapper.docToHtml(doc).map(html => str.concat(html)).orElse(str), " ").trim()
+    static concatDocs(...docs:DocsDocumentModel[]):Maybe<HtmlParagraph>{
+        return docsToHtml(docs).map(concatHtml)
+        
+            function docsToHtml(docs:Array<DocsDocumentModel>):Maybe<List<HtmlParagraph>>{
+                return List.fromArr(docs).map(DocsToHtmlMapper.docToHtml).sequence(Maybe.of)
+            }
+            function concatHtml(lists: List<HtmlParagraph>):HtmlParagraph{
+                return lists.reduce(concatStrings)
+            }
     }
 }
 
@@ -25,7 +34,7 @@ export interface IHtmlMapperConfigObj extends ImageHtmlMapper, TextRunHtmlMapper
 
 
 class HtmlMapper3{
-    static createHtml(documentContent:List<Paragraph>, imageProps?:DocsInlineObjectsModel, mapper:IHtmlMapperConfigObj = HtmlMapperConfigObj.initializeWithDefaults()):string{
+    static createHtml(documentContent:List<Paragraph>, imageProps?:DocsInlineObjectsModel, mapper:IHtmlMapperConfigObj = HtmlMapperConfigObj.initializeWithDefaults()):HtmlParagraph{
         return documentContent.map(paragraphToString(mapper, Maybe.of(imageProps)))
             .map(mapper.wrapInParagraphTag)
             .reduce(concatStrings)
