@@ -1,12 +1,20 @@
-import { DocsDocumentModel, DocsParagraphElementModel, DocsInlineObjectElementModel } from "../Models/DocsDocumentModel";
-import { DocsInlineObjectsModel } from "../Models/DocsInlineObjectModel";
-import { concatStrings } from "../Models/UtilityFunctions";
-import { HtmlParagraph } from "./Email";
+import { SizeInPixels } from "./ParagraphElements/Image/SizeUnits";
 
-import { ImageHtmlMapper, SizeInPixels } from "./ParagraphElements/Image";
-import { ParagraphHtmlWrapper } from "./ParagraphElements/ParagraphElements";
-import { TextRunHtmlMapper } from "./ParagraphElements/TextRun";
 
+const HtmlTagsConst = {
+    p:"p",
+    a:"a",
+    img:"img",
+} as const
+
+export type HtmlTags = typeof HtmlTagsConst[keyof typeof HtmlTagsConst]
+export type HtmlStructure<TagName extends HtmlTags> = `<${TagName}${string}>${string}</${TagName}>`
+
+export type Html<tag extends HtmlTags> = {
+    [P in HtmlTags]: HtmlStructure<P>
+}[tag]
+
+export type HtmlParagraph = Html<"p">
 
 export class HtmlCreatorMapper{
     static wrapInImageTag(sourceUrl:string, sizeInPixels:SizeInPixels): string{
