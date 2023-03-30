@@ -1,21 +1,7 @@
-import { List } from "../Monads/List"
+import { List } from "../Utility/List"
+import { Html, HtmlTags } from "./HtmlCreator"
+
 export type Email = `${string}@${string}`
-
-const HtmlTagsConst = {
-    p:"p",
-    a:"a",
-    img:"img",
-} as const
-
-type HtmlTags = typeof HtmlTagsConst[keyof typeof HtmlTagsConst]
-export type HtmlStructure<TagName extends HtmlTags> = `<${TagName}${string}>${string}</${TagName}>`
-
-type Html<tag extends HtmlTags> = {
-    [P in HtmlTags]: HtmlStructure<P>
-}[tag]
-
-export type HtmlParagraph = Html<"p">
-
 
 class EmailSubjectLengthValidator{
     static getMaxSubjectLength(){

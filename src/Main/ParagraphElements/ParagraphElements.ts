@@ -1,9 +1,10 @@
 import { DocsParagraphElementModel, DocsDocumentModel, DocsParagraphModel, DocsBodyContentModel } from "../../Models/DocsDocumentModel"
-import { List, reduceToList } from "../../Monads/List"
-import { Maybe, isSomething } from "../../Monads/Maybe"
-import { HtmlParagraph } from "../Email"
-import { ImageHtmlMapper } from "./Image"
-import { TextRunHtmlMapper } from "./TextRun"
+import { List, reduceToList } from "../../Utility/List"
+import { Maybe, isSomething } from "../../Utility/Maybe"
+import { HtmlParagraph } from "../HtmlCreator"
+import { ImageHtmlMapper } from "./Image/HtmlMapper"
+import { TextRunHtmlMapper } from "./TextRun/Mapper"
+
 
 
 export type Paragraph = List<DocsParagraphElementModel>

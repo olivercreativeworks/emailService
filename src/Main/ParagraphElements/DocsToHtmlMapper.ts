@@ -1,15 +1,18 @@
-import { DocsDocumentModel, DocsParagraphElementModel, DocsInlineObjectElementModel } from "../Models/DocsDocumentModel";
-import { DocsInlineObjectsModel } from "../Models/DocsInlineObjectModel";
-import { concatStrings } from "../Models/UtilityFunctions";
-import { List } from "../Monads/List";
-import { Maybe, curryLiftA2 } from "../Monads/Maybe";
-import { bindClassMethodsToClassInstance } from "./Decorator";
-import { HtmlCreatorMapper } from "./HtmlCreator";
-import { ImageHtmlMapper, createImageHtmlFn, Image } from "./ParagraphElements/Image";
-import { DocsDocsDocumentAsMultipleParagraphs, Paragraph, ParagraphElementHtmlMapper, ParagraphHtmlWrapper, wrapInParagraphTagFn } from "./ParagraphElements/ParagraphElements";
-import { TextRunHtmlMapper, createTextRunHtmlFn, TextRun } from "./ParagraphElements/TextRun";
-import { documentContentToHtmlMapper } from "./src";
-import { HtmlParagraph } from "./Email";
+import { DocsInlineObjectsModel, DocsDocumentModel, DocsParagraphElementModel, DocsInlineObjectElementModel } from "../../Models/DocsDocumentModel"
+import { bindClassMethodsToClassInstance } from "../../Utility/Decorator"
+import { List } from "../../Utility/List"
+import { Maybe, curryLiftA2 } from "../../Utility/Maybe"
+import { concatStrings } from "../../Utility/StringFunctions"
+import { HtmlParagraph, HtmlCreatorMapper } from "../HtmlCreator"
+import { ImageHtmlMapper, createImageHtmlFn } from "./Image/HtmlMapper"
+import { Image } from "./Image/ImageObj"
+import { Paragraph, DocsDocsDocumentAsMultipleParagraphs, ParagraphHtmlWrapper, ParagraphElementHtmlMapper, wrapInParagraphTagFn } from "./ParagraphElements"
+import { TextRunHtmlMapper, createTextRunHtmlFn } from "./TextRun/Mapper"
+import { TextRun } from "./TextRun/TextRun"
+
+
+
+export type documentContentToHtmlMapper = (documentContent:List<Paragraph>, imageProps?:DocsInlineObjectsModel) => HtmlParagraph
 
 
 export class DocsToHtmlMapper{
@@ -61,7 +64,6 @@ class HtmlMapper3{
         }
     }
 }
-
 
 class HtmlMapperConfigObj implements IHtmlMapperConfigObj{
     wrapInParagraphTag: wrapInParagraphTagFn;
