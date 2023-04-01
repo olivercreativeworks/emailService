@@ -1,25 +1,22 @@
 import { DocsTextRunModel } from "../../../Models/DocsDocumentModel"
-import { Maybe, curryLiftA2 } from "../../../Utility/Maybe"
-import { DocsTextRunMapper, IHtmlLinkTagCreator, ITextRunHtmlMapper } from "./Mapper"
+import { Maybe } from "../../../Utility/Maybe"
 
+export interface ITextRun{
+    text:Maybe<string>
+    link:Maybe<string>
+}
+export class TextRun implements ITextRun{
+    text:Maybe<string>
+    link:Maybe<string>
 
+    constructor(text?:string, link?:string){
+        this.text = Maybe.of(text)
+        this.link = Maybe.of(link)
+    }
 
-export class TextRun{
-    static createHtml(textRun: DocsTextRunModel, mapper:ITextRunHtmlMapper = DocsTextRunMapper.initializeWithDefaults()):string{
-        const text = getText(textRun)
-        return wrapInLinkTag(mapper, getLink(textRun), text)
-            .orElseGet(() => text.orElse("<p></p>"))
-        
-        function wrapInLinkTag(mapper:IHtmlLinkTagCreator, link:Maybe<string>, text:Maybe<string>):Maybe<string>{
-            return curryLiftA2(mapper.wrapInLinkTag, link, text)
-        }
-
-        function getText(textRun:DocsTextRunModel):Maybe<string>{
-            return Maybe.of(textRun?.content)
-        }
-        function getLink(textRun:DocsTextRunModel):Maybe<string>{
-            return Maybe.of(textRun?.textStyle?.link?.url)
-        }
+    static of(docsTextRunModel: DocsTextRunModel):TextRun{
+        const text = docsTextRunModel?.content
+        const link = docsTextRunModel?.textStyle?.link?.url
+        return new TextRun(text, link)
     }
 }
-
