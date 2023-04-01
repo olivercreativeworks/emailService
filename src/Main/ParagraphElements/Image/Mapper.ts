@@ -1,33 +1,17 @@
-import { DocsInlineObjectSizeModel } from "../../../Models/DocsDocumentModel"
+import { DocsInlineObjectElementModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel } from "../../../Models/DocsDocumentModel"
 import { bindClassMethodsToClassInstance } from "../../../Utility/Decorator"
-import { IDocsImageMapper, IImageHtmlMapper, DocsImageHtmlMapper } from "./HtmlMapper"
-import { SizeInPixels, ISizeInPixels } from "./SizeUnits"
+import { Maybe, curryLiftA2 } from "../../../Utility/Maybe"
+import { HtmlImage, HtmlLink } from "../../HtmlCreator"
+import { createImageHtmlFn, createLinkTagFn, DocsImageHtmlMapper, IDocsImageMapper, IHtmlImageTagCreator, IImageHtmlMapper } from "./HtmlMapper"
+import { IImage, Image } from "./ImageObj"
+import { ISizeInPixels, SizeInPixels } from "./SizeUnits"
 import { IPixelSizeConverter, DocsSizeMapper } from "./SizeUnitsMapper"
 
-export class DocsImageMapper implements IDocsImageMapper{
-    htmlMapper:IImageHtmlMapper
-    sizeMapper: IPixelSizeConverter
+type createImageTagFn = (sourceUrl:string, sizeInPixels:SizeInPixels) => HtmlImage
 
-    @bindClassMethodsToClassInstance
-    static of(htmlMapper:IImageHtmlMapper, sizeMapper: IPixelSizeConverter):DocsImageMapper{
-        return new DocsImageMapper(htmlMapper, sizeMapper)
-    }
-
-    static initialzeWithDefaults():DocsImageMapper{
-        return DocsImageMapper.of(DocsImageHtmlMapper.initializeWithDefaults(), DocsSizeMapper.initializeWithDefaults())
-    }
-
-    private constructor(htmlMapper:IImageHtmlMapper, sizeMapper: IPixelSizeConverter){
-        this.htmlMapper = htmlMapper
-        this.sizeMapper = sizeMapper
-    }
-    wrapInLinkTag(link:string, text:string): string{
-        return this.htmlMapper.wrapInLinkTag(link, text)
-    }
-    wrapInImageTag(sourceUrl:string, sizeInPixels:SizeInPixels): string{
-        return this.htmlMapper.wrapInImageTag(sourceUrl, sizeInPixels)
-    }
-    convertDocsSizeToPixelSize(size: DocsInlineObjectSizeModel): ISizeInPixels {
-        return this.sizeMapper.convertDocsSizeToPixelSize(size)
+class ImageMapper{
+    static toHtml(image:IImage, createImageTagFn:createImageTagFn, createLinkTagFn:createLinkTagFn):string{
+        const imageHtml = curryLiftA2(createImageTagFn, image.sourceUrl, image.size)
+        return curryLiftA2(createLinkTagFn, image.link, imageHtml).orElseGet(() => imageHtml.orElse(""))
     }
 }
