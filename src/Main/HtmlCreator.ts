@@ -7,20 +7,22 @@ const HtmlTagsConst = {
     img:"img",
 } as const
 
-export type HtmlTags = typeof HtmlTagsConst[keyof typeof HtmlTagsConst]
-export type HtmlStructure<TagName extends HtmlTags> = `<${TagName}${string}>${string}</${TagName}>`
+type HtmlTags = typeof HtmlTagsConst[keyof typeof HtmlTagsConst]
+type HtmlStructure<TagName extends HtmlTags> = `<${TagName}${string}>${string}</${TagName}>`
 
-export type Html<tag extends HtmlTags> = {
+type Html<tag extends HtmlTags> = {
     [P in HtmlTags]: HtmlStructure<P>
 }[tag]
 
 export type HtmlParagraph = Html<"p">
+export type HtmlLink = Html<"a">
+export type HtmlImage = Html<"img">
 
 export class HtmlCreatorMapper{
     static wrapInImageTag(sourceUrl:string, sizeInPixels:SizeInPixels): string{
         return `<img src="${sourceUrl}", height="${sizeInPixels.height}", width="${sizeInPixels.width}"></img>`
     }
-    static wrapInLinkTag (link:string, text:string): string{
+    static wrapInLinkTag (link:string, text:string): HtmlLink{
         return `<a href="${link}" target="_blank">${text}</a>`
     }
     static wrapInParagraphTag(text:string):HtmlParagraph{
