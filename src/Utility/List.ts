@@ -2,8 +2,10 @@ import { MonadDefinitions } from "./Interfaces"
 
 interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
 }
+interface Monad<Value> extends MonadDefinitions.Monad<Value>{
+}
 
-export class List<Value>{
+export class List<Value> implements Monad<Value>{
     private $value: Value[]
 
     constructor(value: Value[]){
@@ -61,16 +63,19 @@ export class List<Value>{
         return initialValue ? this.$value.reduce((value, currVal) => fn(value, currVal), initialValue) : this.$value.reduce((value, currVal) => fn(value, currVal))
     }
 
-    traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(of:(value:List<A>) => B, fn: (value: Value)=> C): B{
+    traverse<A, B extends Applicative<List<A>>>(of:(value:List<A>) => B, fn: (value: Value)=> Applicative<A>): B{
         return this.reduce( (intial, curr) => intial.map(list => (value:A) => list.concat(value)).ap(fn(curr as Value)) as B, of(List.fromArr([])))
     }
+    // traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(of:(value:List<A>) => B, fn: (value: Value)=> C): B{
+    //     return this.reduce( (intial, curr) => intial.map(list => (value:A) => list.concat(value)).ap(fn(curr as Value)) as B, of(List.fromArr([])))
+    // }
 
     private identity<A>(x:A):A{
         return x
     }
 
     sequence<A, B extends Applicative<List<A>>>(this:List<Applicative<A>>, of:(value:List<A>) => B): B{
-        return this.traverse(of,this.identity)
+        return this.traverse(of, this.identity)
     }
 
     asArray():Array<Value>{
