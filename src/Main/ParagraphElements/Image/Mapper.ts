@@ -1,17 +1,10 @@
-import { DocsInlineObjectElementModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel } from "../../../Models/DocsDocumentModel"
-import { bindClassMethodsToClassInstance } from "../../../Utility/Decorator"
-import { Maybe, curryLiftA2 } from "../../../Utility/Maybe"
-import { HtmlImage, HtmlLink } from "../../HtmlCreator"
-import { createImageHtmlFn, createLinkTagFn, DocsImageHtmlMapper, IDocsImageMapper, IHtmlImageTagCreator, IImageHtmlMapper } from "./HtmlMapper"
-import { IImage, Image } from "./ImageObj"
-import { ISizeInPixels, SizeInPixels } from "./SizeUnits"
-import { IPixelSizeConverter, DocsSizeMapper } from "./SizeUnitsMapper"
+import { HtmlImage, HtmlLink, HtmlCreatorMapper } from "../../HtmlCreator"
+import { ImageAttributes } from "./Attributes"
+import { Html_Image } from "./Html_Image"
 
-type createImageTagFn = (sourceUrl:string, sizeInPixels:SizeInPixels) => HtmlImage
-
-class ImageMapper{
-    static toHtml(image:IImage, createImageTagFn:createImageTagFn, createLinkTagFn:createLinkTagFn):string{
-        const imageHtml = curryLiftA2(createImageTagFn, image.sourceUrl, image.size)
-        return curryLiftA2(createLinkTagFn, image.link, imageHtml).orElseGet(() => imageHtml.orElse(""))
+export class ImageMapper{
+    static toHtml(image:Html_Image):HtmlImage | HtmlLink{
+        const imgTag = HtmlCreatorMapper.createImageTag(ImageAttributes.from(image))
+        return image.link.map(link => HtmlCreatorMapper.wrapInLinkTag(link, imgTag)).orElse(imgTag)
     }
 }
