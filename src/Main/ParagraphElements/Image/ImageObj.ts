@@ -1,5 +1,6 @@
 import { DocsInlineObjectSizeModel, DocsInlineObjectElementModel, DocsInlineObjectsModel } from "../../../Models/DocsDocumentModel"
-import { Maybe, liftA2 } from "../../../Utility/Maybe"
+import { Maybe } from "../../../Utility/Maybe"
+import { liftA2 } from "../../../Utility/Utility"
 import { IElement } from "../ParagraphElements"
 
 export interface IImage extends IElement<"image">{
