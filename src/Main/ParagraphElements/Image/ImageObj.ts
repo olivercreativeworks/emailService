@@ -1,48 +1,40 @@
-import { DocsInlineObjectElementModel, DocsInlineObjectsModel, DocsEmbeddedObjectModel, DocsInlineObjectSizeModel } from "../../../Models/DocsDocumentModel"
-import { Maybe } from "../../../Utility/Maybe"
-import { SizeInPixels } from "./SizeUnits"
+import { DocsInlineObjectSizeModel, DocsInlineObjectElementModel, DocsInlineObjectsModel } from "../../../Models/DocsDocumentModel"
+import { Maybe, liftA2 } from "../../../Utility/Maybe"
+import { IElement } from "../ParagraphElements"
 
-
-export interface IImage{
-    sourceUrl:Maybe<string>
-    size:Maybe<SizeInPixels>
+export interface IImage extends IElement<"image">{
+    sourceUrl:string
+    size:DocsInlineObjectSizeModel
     link:Maybe<string>
+    type: "image"
 }
 
 export class Image implements IImage{
-    sourceUrl:Maybe<string>
-    size:Maybe<SizeInPixels>
-    link:Maybe<string>
+    sourceUrl: string
+    size: DocsInlineObjectSizeModel
+    link: Maybe<string>
+    type: "image"
 
-    static of(inlineObj:DocsInlineObjectElementModel, imageProps: DocsInlineObjectsModel, mapper:(size:DocsInlineObjectSizeModel)=>SizeInPixels):Image{
-        const image = getDocsImage(inlineObj, imageProps)
-        const sourceUrl = image.flatMap(getSourceUrl).unsafeUnwrap()
-        const size = image.flatMap(image => getSizeInPixels(mapper, image)).unsafeUnwrap()
-        const link = getLink(inlineObj).unsafeUnwrap()
-        return new Image(sourceUrl, size, link)
-
-        function getLink(inlineObj:DocsInlineObjectElementModel):Maybe<string>{
-            return Maybe.of(inlineObj?.textStyle?.link?.url)
-        }
-        function getSourceUrl(embeddedObj:DocsEmbeddedObjectModel):Maybe<string>{
-            return Maybe.of(embeddedObj?.imageProperties?.contentUri)
-        }
-        function getDocsImage(inlineObj:DocsInlineObjectElementModel, imageProps:DocsInlineObjectSizeModel ):Maybe<DocsEmbeddedObjectModel>{
-            return Maybe.of(inlineObj?.inlineObjectId).map(id => imageProps[id]?.inlineObjectProperties?.embeddedObject)
-        }
-        function getSizeInPixels(mapper:(size:DocsInlineObjectSizeModel)=>SizeInPixels, embeddedObj:DocsEmbeddedObjectModel): Maybe<SizeInPixels>{
-            return Maybe.of(embeddedObj?.size).map(mapper)
-        }
+    constructor(sourceUrl:string, size:DocsInlineObjectSizeModel, link?:string){
+        this.sourceUrl = sourceUrl
+        this.size = size
+        this.link = Maybe.of(link)
+        this.type = "image"
     }
 
-    constructor(sourceUrl?:string, size?:SizeInPixels, link?:string){
-        this.sourceUrl = Maybe.of(sourceUrl)
-        this.size = Maybe.of(size)
-        this.link = Maybe.of(link)
+    static of(sourceUrl:string, size:DocsInlineObjectSizeModel, link?:string):Image{
+        return new Image(sourceUrl, size, link)
+    }
+
+    static from(inlineImage: DocsInlineObjectElementModel, props:DocsInlineObjectsModel = {}):Maybe<Image>{
+        const objProps = props[inlineImage?.inlineObjectId]?.inlineObjectProperties
+        const sourceUrl = objProps?.embeddedObject?.imageProperties?.contentUri
+        const size = objProps?.embeddedObject?.size
+        const link = inlineImage?.textStyle?.link?.url
+        return liftA2(
+            (sourceUrl:string) => (size:DocsInlineObjectSizeModel) => Image.of(sourceUrl, size, link), 
+            Maybe.of(sourceUrl), 
+            Maybe.of(size)
+        )
     }
 }
-
-
-
-
-
