@@ -1,7 +1,7 @@
 import { DocsInlineObjectSizeModel } from "../../../Models/DocsDocumentModel"
 
-export type sizeUnits = "pixel"
-export interface ISize<unitOfMeasure extends sizeUnits>{
+type sizeUnits = "pixel"
+interface ISize<unitOfMeasure extends sizeUnits>{
     height:number
     width:number
     unit: unitOfMeasure
