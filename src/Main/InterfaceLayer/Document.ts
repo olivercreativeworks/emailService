@@ -1,13 +1,7 @@
 import { DocsInlineObjectsModel } from "../../Models/DocsDocumentModel"
 import { MonadDefinitions } from "../../Utility/Interfaces"
 import { List } from "../../Utility/List"
-import { List_2D } from "../../Utility/List_2D"
-
-type Ap<A> = Applicative<A>
-type Li<A> = List<A>
-type WrapLi1<Unit, C extends Ap<Li<Unit>>> = (arg:Li<Unit>) => C
-type WrapLi2<Unit, D extends Ap<Li<Li<Unit>>>> = (arg:Li<Li<Unit>>) => D
-type ListApplicativeWrapperFn<Unit> = WrapLi1<Unit, Ap<Li<Unit>>> & WrapLi2<Unit, Ap<Li<Li<Unit>>>>
+import { ListApplicativeWrapperFn, List_2D } from "../../Utility/List_2D"
 
 interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
 }
