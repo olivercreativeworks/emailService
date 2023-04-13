@@ -1,4 +1,4 @@
-import { DocsInlineObjectSizeModel } from "../../../Models/DocsDocumentModel"
+import { DocsInlineObjectSizeModel } from "../../Models/DocsDocumentModel"
 
 type sizeUnits = "pixel"
 interface ISize<unitOfMeasure extends sizeUnits>{

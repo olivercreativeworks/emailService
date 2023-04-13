@@ -1,7 +1,7 @@
-import { DocsInlineObjectSizeModel, DocsInlineObjectElementModel, DocsInlineObjectsModel } from "../../../Models/DocsDocumentModel"
-import { Maybe } from "../../../Utility/Maybe"
-import { liftA2 } from "../../../Utility/Utility"
-import { IElement } from "../ParagraphElements"
+import { DocsInlineObjectSizeModel, DocsInlineObjectElementModel, DocsInlineObjectsModel } from "../../Models/DocsDocumentModel"
+import { Maybe } from "../../Utility/Maybe"
+import { Utility } from "../../Utility/Utility"
+import { IElement } from "./ParagraphElements"
 
 export interface IImage extends IElement<"image">{
     sourceUrl:string
@@ -32,7 +32,7 @@ export class Image implements IImage{
         const sourceUrl = objProps?.embeddedObject?.imageProperties?.contentUri
         const size = objProps?.embeddedObject?.size
         const link = inlineImage?.textStyle?.link?.url
-        return liftA2(
+        return Utility.liftA2(
             (sourceUrl:string) => (size:DocsInlineObjectSizeModel) => Image.of(sourceUrl, size, link), 
             Maybe.of(sourceUrl), 
             Maybe.of(size)

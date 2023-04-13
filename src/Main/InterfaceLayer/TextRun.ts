@@ -1,6 +1,6 @@
-import { DocsTextRunModel } from "../../../Models/DocsDocumentModel"
-import { Maybe } from "../../../Utility/Maybe"
-import { IElement } from "../ParagraphElements"
+import { DocsTextRunModel } from "../../Models/DocsDocumentModel"
+import { Maybe } from "../../Utility/Maybe"
+import { IElement } from "./ParagraphElements"
 
 export interface ITextRun extends IElement<"textRun">{
     text:string

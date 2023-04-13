@@ -1,8 +1,9 @@
 import { DocsDocumentModel, DocsParagraphElementModel, DocsInlineObjectsModel, DocsBodyContentModel } from "../../Models/DocsDocumentModel"
 import { List } from "../../Utility/List"
-import { Maybe, isSomething } from "../../Utility/Maybe"
+import { Maybe, MaybeUtility } from "../../Utility/Maybe"
 import { Document } from "./Document"
 import { ParagraphElement, ParagraphElementMaker } from "./ParagraphElements"
+
 
 export class DocsDocument{
     static createDocsDocument<A>(doc:DocsDocumentModel):Maybe<Document<ParagraphElement>>{
@@ -20,7 +21,7 @@ export class DocsDocument{
             return getContent(doc).flatMap($getElements)
 
             function $getElements(contentList:List<DocsBodyContentModel>):Maybe<List<List<DocsParagraphElementModel>>>{
-                return contentList.compactMap(content => Maybe.of(content?.paragraph?.elements).map(List.fromArr), isSomething).sequence(Maybe.of)
+                return contentList.compactMap(content => Maybe.of(content?.paragraph?.elements).map(List.fromArr), MaybeUtility.isSomething).sequence(Maybe.of)
             }
             function getContent(doc:DocsDocumentModel):Maybe<List<DocsBodyContentModel>>{
                 return Maybe.of(doc?.body?.content).map(List.fromArr)
@@ -28,7 +29,7 @@ export class DocsDocument{
         }
 
         function toParagraphElements(document:Document<DocsParagraphElementModel>):Maybe<Document<ParagraphElement>>{
-            return document.compactMapWithInlineObj($toParagraphElements, isSomething).sequence(Maybe.of, Maybe.of)
+            return document.compactMapWithInlineObj($toParagraphElements, MaybeUtility.isSomething).sequence(Maybe.of, Maybe.of)
             
             function $toParagraphElements(inlineObj:DocsInlineObjectsModel):(element:DocsParagraphElementModel) => Maybe<ParagraphElement>{
                 return (element:DocsParagraphElementModel) => ParagraphElementMaker.from(element, inlineObj)
