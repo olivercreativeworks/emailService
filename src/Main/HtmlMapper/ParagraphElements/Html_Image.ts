@@ -1,14 +1,14 @@
-import { Maybe } from "../../Utility/Maybe"
-import { IImage } from "../InterfaceLayer/ImageObj"
-import { SizeInPixels } from "./SizeUnits"
+import { Maybe } from "../../../Utility/Maybe"
+import { IImage } from "../../InterfaceLayer/ImageObj"
+import { SizeInPixels } from "./Html_Image_SizeUnits"
 
-interface PixelImage{
+export interface IHtml_Image{
     sourceUrl:string
     size:SizeInPixels
     link:Maybe<string>
 }
 
-export class Html_Image implements PixelImage{
+export class Html_Image implements IHtml_Image{
     sourceUrl: string
     size: SizeInPixels
     link: Maybe<string>
