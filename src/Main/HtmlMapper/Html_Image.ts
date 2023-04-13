@@ -1,5 +1,5 @@
-import { Maybe } from "../../../Utility/Maybe"
-import { IImage } from "./ImageObj"
+import { Maybe } from "../../Utility/Maybe"
+import { IImage } from "../InterfaceLayer/ImageObj"
 import { SizeInPixels } from "./SizeUnits"
 
 interface PixelImage{
