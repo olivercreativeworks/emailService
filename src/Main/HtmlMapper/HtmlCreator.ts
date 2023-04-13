@@ -1,7 +1,7 @@
 import { Maybe, MaybeUtility } from "../../Utility/Maybe"
-import { IImageAttributes } from "./ImageAttributes"
+import { IImageAttributes } from "./HtmlAttributes/ImageAttributes"
 import { HtmlTags, IValidHtml } from "./IValidHtml"
-import { ILinkAttributes, LinkAttributes } from "./LinkAttributes"
+import { ILinkAttributes, LinkAttributes } from "./HtmlAttributes/LinkAttributes"
 
 type IAttributes = ILinkAttributes | IImageAttributes
 
@@ -29,19 +29,14 @@ export class HtmlCreatorMapper{
         return `<${tag} ${attributes}>${text}</${tag}>` as IValidHtml
     }
 
-    static createLinkTagElseDefault<A extends HtmlTags>(defaultText:string="", linkAttributes?:LinkAttributes, tagForDefaultText?:A, attributesForDefaultTag?:IAttributes):string{
-        const htmlText = MaybeUtility.maybeLiftA2(createTag(defaultText), tagForDefaultText, attributesForDefaultTag).orElse(defaultText)
-        const htmlOutput = MaybeUtility.maybeLiftA1(createLinkTag(htmlText), linkAttributes).orElse(htmlText)
-        return htmlOutput
-
-        function createLinkTag(text:string): (linkAttributes: ILinkAttributes) => string{
+    static createLinkTagElseDefault(defaultText:string, linkAttributes:Maybe<ILinkAttributes>):string{
+        return MaybeUtility.maybe(defaultText, createLinkTag(defaultText), linkAttributes )
+        
+        function createLinkTag(text:string): (linkAttributes:ILinkAttributes) => string{
             return (linkAttributes:ILinkAttributes) => HtmlCreatorMapper.createTag("a", text, linkAttributes)
-        }
-
-        function createTag<A extends HtmlTags, B extends IAttributes>(text?:string): (tag:A) => (attributes?:B) => IValidHtml{
-            return (tag?:A) => (attributes?:B) => HtmlCreatorMapper.createTag(tag, text, attributes)
-        }
+        } 
     }
+
 }
 
 
