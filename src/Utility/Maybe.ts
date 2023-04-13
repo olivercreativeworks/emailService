@@ -87,18 +87,32 @@ export class Maybe<Value> implements Monad<Value>{
     }
 }
 
-export function isSomething<A>(maybe:Maybe<A>):boolean{
-    return maybe.isSomething()
-}
+export namespace MaybeUtility{
+    export function isSomething<A>(maybe:Maybe<A>):boolean{
+        return maybe.isSomething()
+    }
+    
+    export function unsafeUnwrap<A>(maybe:Maybe<A>):A{
+        return maybe.unsafeUnwrap()
+    }
+    
+    export function maybe<A,B>(valueIfMaybeIsNothing:B, fnToApply:(value:A) => B,  maybeValue:Maybe<A>):B{
+        return maybeValue.map(fnToApply).orElse(valueIfMaybeIsNothing)
+    }
+    
+    export function orElseGet<A,B>(...fns: Array<(arg?:A) => Maybe<B>>): (arg?:A) => Maybe<B>{
+        return (arg?:A) => fns.reduce((result:Maybe<B>, fn:(arg:A) => Maybe<B>) => result.isSomething() ? result : fn(arg), Maybe.of(null))
+    }
 
-export function unsafeUnwrap<A>(maybe:Maybe<A>):A{
-    return maybe.unsafeUnwrap()
-}
+    export function maybeLiftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, arg1:A, arg2:B):Maybe<C>{
+        return liftA2(fn, Maybe.of(arg1), Maybe.of(arg2))
+    }
 
-export function maybe<A,B>(valueIfMaybeIsNothing:B, fnToApply:(value:A) => B,  maybeValue:Maybe<A>):B{
-    return maybeValue.map(fnToApply).orElse(valueIfMaybeIsNothing)
-}
+    export function maybeLiftA1<A,B>(fn:(arg1:A) => B, arg1:A):Maybe<B>{
+        return Maybe.of(arg1).map(fn)
+    }
 
-export function orElseGet<A,B>(...fns: Array<(arg?:A) => Maybe<B>>): (arg?:A) => Maybe<B>{
-    return (arg?:A) => fns.reduce((result:Maybe<B>, fn:(arg:A) => Maybe<B>) => result.isSomething() ? result : fn(arg), Maybe.of(null))
+    function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, maybe1:Maybe<A>, maybe2:Maybe<B>):Maybe<C>{
+        return maybe1.map(fn).ap(maybe2)
+    }
 }
