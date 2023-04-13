@@ -1,6 +1,6 @@
 import { SizeInPixels } from "./SizeUnits"
 
-export interface IAttributes{
+export interface IImageAttributes{
     src:string
     height:number
     width:number
@@ -11,7 +11,7 @@ interface Image{
     size: SizeInPixels
 }
 
-export class ImageAttributes implements IAttributes{
+export class ImageAttributes implements IImageAttributes{
     src: string
     height: number
     width: number
