@@ -107,9 +107,29 @@ export namespace MaybeUtility{
     export function maybeLiftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, arg1:A, arg2:B):Maybe<C>{
         return liftA2(fn, Maybe.of(arg1), Maybe.of(arg2))
     }
+    export function maybeLiftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, arg1:A, arg2:B, arg3:C):Maybe<D>{
+        return liftA3(fn, Maybe.of(arg1), Maybe.of(arg2), Maybe.of(arg3))
+    }
+
 
     export function maybeLiftA1<A,B>(fn:(arg1:A) => B, arg1:A):Maybe<B>{
         return Maybe.of(arg1).map(fn)
+    }
+
+    export function curryLiftA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3:Maybe<C>):Maybe<D>{
+        return liftA3(curryA3(fn), maybe1, maybe2, maybe3)
+    }
+
+    export function maybeCurryLiftA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D, arg1:A, arg2:B, arg3:C):Maybe<D>{
+        return liftA3(curryA3(fn), Maybe.of(arg1), Maybe.of(arg2), Maybe.of(arg3))
+    }
+
+    function curryA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D): (arg1:A) => (arg2:B) => (arg3:C) => D{
+        return (arg1:A) => (arg2:B) => (arg3:C) => fn(arg1, arg2, arg3)
+    }
+
+    function liftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3:Maybe<C>):Maybe<D>{
+        return maybe1.map(fn).ap(maybe2).ap(maybe3)
     }
 
     function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, maybe1:Maybe<A>, maybe2:Maybe<B>):Maybe<C>{
