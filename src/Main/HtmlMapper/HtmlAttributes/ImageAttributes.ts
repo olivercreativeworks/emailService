@@ -1,4 +1,4 @@
-import { SizeInPixels } from "../ParagraphElements/Html_Image_SizeUnits"
+import { SizeInPixels } from "../ParagraphElements/Html_Image/Html_Image_SizeUnits"
 
 export interface IImageAttributes{
     src:string
