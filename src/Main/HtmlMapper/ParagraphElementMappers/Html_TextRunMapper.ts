@@ -1,5 +1,5 @@
 import { HtmlCreatorMapper } from "../HtmlCreator";
-import { ILinkAttributes, LinkAttributes } from "../HtmlAttributes/LinkAttributes";
+import { ILinkAttributes } from "../HtmlAttributes/LinkAttributes";
 import { IHtml_TextRun } from "../ParagraphElements/Html_TextRun/Html_TextRun";
 
 type LinkAttributesFn = (link:string) => ILinkAttributes
