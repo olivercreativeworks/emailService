@@ -1,7 +1,7 @@
-import { Maybe, MaybeUtility } from "../../Utility/Maybe"
-import { IImageAttributes } from "./HtmlAttributes/ImageAttributes"
+import { Maybe, MaybeUtility } from "../../../Utility/Maybe"
+import { IImageAttributes } from "../HtmlAttributes/ImageAttributes"
 import { HtmlTags, IValidHtml } from "./IValidHtml"
-import { ILinkAttributes, LinkAttributes } from "./HtmlAttributes/LinkAttributes"
+import { ILinkAttributes, LinkAttributes } from "../HtmlAttributes/LinkAttributes"
 
 type IHtml_Attributes = ILinkAttributes | IImageAttributes
 
