@@ -87,32 +87,52 @@ export class Maybe<Value> implements Monad<Value>{
     }
 }
 
-export function isSomething<A>(maybe:Maybe<A>):boolean{
-    return maybe.isSomething()
-}
+export namespace MaybeUtility{
+    export function isSomething<A>(maybe:Maybe<A>):boolean{
+        return maybe.isSomething()
+    }
+    
+    export function unsafeUnwrap<A>(maybe:Maybe<A>):A{
+        return maybe.unsafeUnwrap()
+    }
+    
+    export function maybe<A,B>(valueIfMaybeIsNothing:B, fnToApply:(value:A) => B,  maybeValue:Maybe<A>):B{
+        return maybeValue.map(fnToApply).orElse(valueIfMaybeIsNothing)
+    }
+    
+    export function orElseGet<A,B>(...fns: Array<(arg?:A) => Maybe<B>>): (arg?:A) => Maybe<B>{
+        return (arg?:A) => fns.reduce((result:Maybe<B>, fn:(arg:A) => Maybe<B>) => result.isSomething() ? result : fn(arg), Maybe.of(null))
+    }
 
-export function unsafeUnwrap<A>(maybe:Maybe<A>):A{
-    return maybe.unsafeUnwrap()
-}
+    export function maybeLiftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, arg1:A, arg2:B):Maybe<C>{
+        return liftA2(fn, Maybe.of(arg1), Maybe.of(arg2))
+    }
+    export function maybeLiftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, arg1:A, arg2:B, arg3:C):Maybe<D>{
+        return liftA3(fn, Maybe.of(arg1), Maybe.of(arg2), Maybe.of(arg3))
+    }
 
-export function maybe<A,B>(valueIfMaybeIsNothing:B, fnToApply:(value:A) => B,  maybeValue:Maybe<A>):B{
-    return maybeValue.map(fnToApply).orElse(valueIfMaybeIsNothing)
-}
 
-interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
-}
+    export function maybeLiftA1<A,B>(fn:(arg1:A) => B, arg1:A):Maybe<B>{
+        return Maybe.of(arg1).map(fn)
+    }
 
-export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
-export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>{
-    return applicative1.map(fn).ap(applicative2)
-}
+    export function curryLiftA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3:Maybe<C>):Maybe<D>{
+        return liftA3(curryA3(fn), maybe1, maybe2, maybe3)
+    }
 
-export function curryA2<A,B,C>(fn:(arg1:A, arg2:B) => C): (arg1:A) => (arg2:B) => C{
-    return (arg1:A) => (arg2:B) => fn(arg1, arg2)
-}
+    export function maybeCurryLiftA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D, arg1:A, arg2:B, arg3:C):Maybe<D>{
+        return liftA3(curryA3(fn), Maybe.of(arg1), Maybe.of(arg2), Maybe.of(arg3))
+    }
 
-export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
-export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>
-export function curryLiftA2<A,B,C>(fn:(arg1:A, arg2:B) => C, applicative1, applicative2){
-    return liftA2(curryA2(fn), applicative1, applicative2)
+    function curryA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D): (arg1:A) => (arg2:B) => (arg3:C) => D{
+        return (arg1:A) => (arg2:B) => (arg3:C) => fn(arg1, arg2, arg3)
+    }
+
+    function liftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3:Maybe<C>):Maybe<D>{
+        return maybe1.map(fn).ap(maybe2).ap(maybe3)
+    }
+
+    function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, maybe1:Maybe<A>, maybe2:Maybe<B>):Maybe<C>{
+        return maybe1.map(fn).ap(maybe2)
+    }
 }
