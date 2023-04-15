@@ -1,5 +1,5 @@
 import { List } from "../Utility/List"
-import { Html, HtmlTags } from "./HtmlCreator"
+
 
 export type Email = `${string}@${string}`
 
@@ -19,8 +19,8 @@ class EmailSubjectValidatonError{
     }
 }
 
-export function sendEmail(recipients:List<Email>, subject:string, htmlBody:Html<HtmlTags>):void{
+export function sendEmail(recipients:List<Email>, subject:string, htmlBody:string):void{
     const recipientsAsString = recipients.asArray().join(",")
     const validSubject = EmailSubjectLengthValidator.validate(subject, EmailSubjectValidatonError.subjectIsTooLongError)
-    GmailApp.sendEmail(recipientsAsString, validSubject, null, {htmlBody})
+    GmailApp.sendEmail(recipientsAsString, validSubject, null, {htmlBody,"name":"Oliver Allen-Cummings"})
 }
