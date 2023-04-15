@@ -1,4 +1,4 @@
-import { HtmlCreatorMapper } from "../HtmlCreator"
+import { HtmlCreatorMapper } from "../HtmlCreator/HtmlCreator"
 import { ImageAttributes } from "../HtmlAttributes/ImageAttributes"
 import { IHtml_Image } from "../ParagraphElements/Html_Image/Html_Image"
 import { ILinkAttributes } from "../HtmlAttributes/LinkAttributes"

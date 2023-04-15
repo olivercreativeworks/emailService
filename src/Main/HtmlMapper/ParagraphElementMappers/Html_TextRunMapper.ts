@@ -1,4 +1,4 @@
-import { HtmlCreatorMapper } from "../HtmlCreator";
+import { HtmlCreatorMapper } from "../HtmlCreator/HtmlCreator";
 import { ILinkAttributes } from "../HtmlAttributes/LinkAttributes";
 import { IHtml_TextRun } from "../ParagraphElements/Html_TextRun/Html_TextRun";
 

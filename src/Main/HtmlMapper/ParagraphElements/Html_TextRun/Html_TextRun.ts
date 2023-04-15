@@ -1,5 +1,4 @@
 import { Maybe } from "../../../../Utility/Maybe"
-import { ITextRun } from "../../../InterfaceLayer/TextRun"
 import { IHtml_ParagraphElementType } from "../Html_ParagraphElements"
 
 export interface IHtml_TextRun{
@@ -20,9 +19,5 @@ export class Html_TextRun implements IHtml_TextRun, IHtml_ParagraphElementType<"
 
     static of(text:string, link:Maybe<string>):Html_TextRun{
         return new Html_TextRun(text, link)
-    }
-
-    static from(textRun: ITextRun):Html_TextRun{
-        return Html_TextRun.of(textRun.text, textRun.link)
     }
 }
