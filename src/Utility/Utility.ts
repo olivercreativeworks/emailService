@@ -9,6 +9,10 @@ export namespace Utility{
     export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>{
         return applicative1.map(fn).ap(applicative2)
     }
+
+    export function isNotNull<A>(x:A):boolean{
+        return !!(x)
+    }
 }
 // function curryA2<A,B,C>(fn:(arg1:A, arg2:B) => C): (arg1:A) => (arg2:B) => C{
 //     return (arg1:A) => (arg2:B) => fn(arg1, arg2)

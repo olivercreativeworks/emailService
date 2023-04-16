@@ -2,6 +2,7 @@ import { DocsDocumentModel, DocsParagraphElementModel } from "../Main/Models/Doc
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
+import { Utility } from "../Utility/Utility"
 
 
 function callingBelow(){
@@ -21,7 +22,7 @@ function convertDocToHtml(doc:DocsDocumentModel){
 }
 
 function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementModel>>{
-    return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(i => !!i)).map(List_2D.from2DArr)
+    return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(Utility.isNotNull)).map(List_2D.from2DArr)
 }
 
 function combineElementsToSingleString(string_2D:List_2D<string>):string{
