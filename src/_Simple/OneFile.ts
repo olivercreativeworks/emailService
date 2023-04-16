@@ -1,4 +1,4 @@
-import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
+import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
@@ -58,7 +58,7 @@ interface ImageAttributes{
     height:number
 }
 
-function createAttributesString(attributes:LinkAttributes | ImageAttributes):string{
+function createAttributesString(attributes:(LinkAttributes | ImageAttributes)):string{
     return Object.entries(attributes).map(joinAttributeWithValue).join(" ")
     
     function joinAttributeWithValue([attribute, value]:[string, string]):string{
@@ -74,21 +74,20 @@ function createLinkAttributes(href:string, target:string= "_blank"):LinkAttribut
     return {href, target}
 }
 
-
 function createParagraphHtml(text:string){
     return createHtmlTag("p", text)
 }
 
-function createImageHtml(height:number, width:number, sourceUrl:string):string{
-    return createHtmlTag("img", null, `height="${height}" width="${width}" src="${sourceUrl}"`)
+function createImageHtml(imageAttributes:ImageAttributes):string{
+    return createHtmlTag("img", null, createAttributesString(imageAttributes))
 }
 
-function createLinkHtml(link:string, innerText:string):string{
-    return createHtmlTag("a", innerText, `href="${link}" target="blank"`)
+function createLinkHtml(linkAttributes:LinkAttributes, innerText:string):string{
+    return createHtmlTag("a", innerText, createAttributesString(linkAttributes))
 }
 
 function createLinkHtmlForElement(element: DocsInlineObjectElementModel | DocsTextRunModel, innerText:string): Maybe<string>{
-    return Maybe.of(element.textStyle?.link?.url).map(link => createLinkHtml(link, innerText))
+    return Maybe.of(element.textStyle?.link?.url).map(createLinkAttributes).map(linkAttributes => createLinkHtml(linkAttributes, innerText))
 }
 
 function convertTextRunToString(textRun:DocsTextRunModel){
@@ -98,13 +97,16 @@ function convertTextRunToString(textRun:DocsTextRunModel){
 
 function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObjectElement:DocsInlineObjectElementModel){
     const objProps = inlineObjects[inlineObjectElement.inlineObjectId]?.inlineObjectProperties
-    
-    const sourceUrl = objProps.embeddedObject.imageProperties.contentUri   
-    const [height, width] = getSizeInPixels(objProps.embeddedObject.size)
-
-    const imgHtml = createImageHtml(height, width, sourceUrl)
-    
+    const imageAttributes = getImageAttributes(objProps)
+    const imgHtml = createImageHtml(imageAttributes)
     return createLinkHtmlForElement(inlineObjectElement, imgHtml).orElse(imgHtml)
+}
+
+function getImageAttributes(inlineObjectProperties: DocsInlineObjectPropertiesModel):ImageAttributes{
+    const sourceUrl = inlineObjectProperties.embeddedObject.imageProperties.contentUri   
+    const [height, width] = getSizeInPixels(inlineObjectProperties.embeddedObject.size)
+    return createImageAttributes(height, width, sourceUrl)
+ 
 }
 
 function getSizeInPixels(size:DocsInlineObjectSizeModel):[height: number, width:number]{
