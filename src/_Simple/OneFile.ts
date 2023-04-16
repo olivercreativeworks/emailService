@@ -32,16 +32,23 @@ function combineHtmlToSingleString(string_2D:List_2D<string>):string{
 }
 
 function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<DocsParagraphElementModel>) => List_2D<string>{
-    return (elements_2D:List_2D<DocsParagraphElementModel>) =>  elements_2D.compactMap( paragraphElement => {
-        const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
-        const hasInlineObjectId = !!(inlineObjectId)
-        if (hasInlineObjectId){
-            return convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement)
-        }
-        else if (!hasInlineObjectId){
-            return convertTextRunToString(paragraphElement.textRun)
-        }
-    })
+    return (elements_2D:List_2D<DocsParagraphElementModel>) =>  elements_2D.compactMap( paragraphElement => elementIsImage(paragraphElement) ? convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement) : convertTextRunToString(paragraphElement.textRun)
+    //     {
+    //     const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
+    //     const hasInlineObjectId = !!(inlineObjectId)
+    //     if (hasInlineObjectId){
+    //         return convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement)
+    //     }
+    //     else if (!hasInlineObjectId){
+    //         return convertTextRunToString(paragraphElement.textRun)
+    //     }
+    // }
+    )
+}
+
+function elementIsImage(element:DocsParagraphElementModel):boolean{
+    const hasInlineObjectId = !!(element?.inlineObjectElement?.inlineObjectId)
+    return hasInlineObjectId
 }
 
 function createHtmlTag(tag:string, innerText:string="", attributes:string=""):string{
