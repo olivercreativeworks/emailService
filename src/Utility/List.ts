@@ -66,9 +66,6 @@ export class List<Value> implements Monad<Value>{
     traverse<A, B extends Applicative<List<A>>>(of:(value:List<A>) => B, fn: (value: Value)=> Applicative<A>): B{
         return this.reduce( (intial, curr) => intial.map(list => (value:A) => list.concat(value)).ap(fn(curr as Value)) as B, of(List.fromArr([])))
     }
-    // traverse<A, B extends Applicative<List<A>>, C extends Applicative<any>>(of:(value:List<A>) => B, fn: (value: Value)=> C): B{
-    //     return this.reduce( (intial, curr) => intial.map(list => (value:A) => list.concat(value)).ap(fn(curr as Value)) as B, of(List.fromArr([])))
-    // }
 
     private identity<A>(x:A):A{
         return x
