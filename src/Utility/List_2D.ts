@@ -1,6 +1,5 @@
-import { MonadDefinitions } from "./Interfaces"
+import { Applicative } from "./Interfaces"
 import { List } from "./List"
-import { Maybe } from "./Maybe"
 
 export class List_2D<BaseElement>{
     private $value: List<List<BaseElement>>
@@ -74,5 +73,3 @@ export type ListApplicativeWrapperFn<Unit> =
     ((arg:List<Unit>) => Applicative<List<Unit>>) & 
     ((arg:List<List<Unit>>) => Applicative<List<List<Unit>>>)
 
-interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
-}

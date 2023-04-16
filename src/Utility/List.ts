@@ -1,9 +1,4 @@
-import { MonadDefinitions } from "./Interfaces"
-
-interface Applicative<Value> extends MonadDefinitions.Applicative<Value>{
-}
-interface Monad<Value> extends MonadDefinitions.Monad<Value>{
-}
+import { Monad, Applicative } from "./Interfaces"
 
 export class List<Value> implements Monad<Value>{
     private $value: Value[]
