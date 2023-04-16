@@ -1,4 +1,4 @@
-import { DocsDocumentModel, DocsParagraphElementModel } from "../Main/Models/DocsDocumentModel"
+import { DocsDocumentModel, DocsInlineObjectElementModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
@@ -15,8 +15,8 @@ function callingBelow(){
 
 function convertDocToHtml(doc:DocsDocumentModel){
     const elements = getElements(doc)
-    const elementsAsString = elements.map(convertElementsToString(doc))
-    const htmlString = elementsAsString.map(combineElementsToSingleString)
+    const elementsAsString = elements.map(convertElementsToHtml(doc))
+    const htmlString = elementsAsString.map(combineHtmlToSingleString)
     
     return htmlString
 }
@@ -25,34 +25,33 @@ function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementMo
     return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(Utility.isNotNull)).map(List_2D.from2DArr)
 }
 
-function combineElementsToSingleString(string_2D:List_2D<string>):string{
+function combineHtmlToSingleString(string_2D:List_2D<string>):string{
     return string_2D.reduce(
         (str:string, list:List<string>) => str.concat(`<p>${list.asArray().join(" ")}</p>`)," "
         )
 }
 
-function convertElementsToString(doc:DocsDocumentModel): (elements_2D:List_2D<DocsParagraphElementModel>) => List_2D<string>{
+function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<DocsParagraphElementModel>) => List_2D<string>{
     return (elements_2D:List_2D<DocsParagraphElementModel>) =>  elements_2D.compactMap( paragraphElement => {
         const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
         const hasInlineObjectId = !!(inlineObjectId)
         if (hasInlineObjectId){
-            return convertImageToString(doc, inlineObjectId, paragraphElement)
+            return convertImageToString(doc, inlineObjectId, paragraphElement.inlineObjectElement)
         }
         else if (!hasInlineObjectId){
-            return convertTextRunToString(paragraphElement)
+            return convertTextRunToString(paragraphElement.textRun)
         }
     })
 }
 
-function convertTextRunToString(paragraphElement:DocsParagraphElementModel){
-    const textRun = paragraphElement.textRun 
+function convertTextRunToString(textRun:DocsTextRunModel){
     const text = textRun.content
     const link = textRun.textStyle?.link?.url
     const hasLink = !! link
     return hasLink ? `<a href="${link}" target="blank">${text}</a>` : text
 }
 
-function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, paragraphElement:DocsParagraphElementModel){
+function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, inlineObjectElement:DocsInlineObjectElementModel){
     const inlineObjects = doc.inlineObjects
     const objProps = inlineObjects[inlineObjectId]?.inlineObjectProperties
     
@@ -64,7 +63,7 @@ function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, para
     
     const imgHtml = `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
     
-    const link = paragraphElement.inlineObjectElement?.textStyle?.link?.url
+    const link = inlineObjectElement?.textStyle?.link?.url
     const hasLink = !! link
     return hasLink ? `<a href="${link}" target="blank">${imgHtml}</a>` : imgHtml
 }
