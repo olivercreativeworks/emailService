@@ -1,4 +1,4 @@
-import { DocsDocumentModel } from "./_Simple/Models/DocsDocumentModel"
+import { DocsDocumentModel } from "./_Simple/DocsDocumentModel"
 import { HtmlConverter } from "./_Simple/OneFile"
 import { Funcs } from "./Utility/Utility"
 

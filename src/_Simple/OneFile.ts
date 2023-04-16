@@ -1,4 +1,4 @@
-import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "./Models/DocsDocumentModel"
+import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "./DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe, MaybeUtility } from "../Utility/Maybe"
