@@ -68,8 +68,7 @@ function convertTextRunToString(textRun:DocsTextRunModel){
 function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObjectElement:DocsInlineObjectElementModel){
     const objProps = inlineObjects[inlineObjectElement.inlineObjectId]?.inlineObjectProperties
     
-    const sourceUrl = objProps.embeddedObject.imageProperties.contentUri
-    
+    const sourceUrl = objProps.embeddedObject.imageProperties.contentUri   
     const [height, width] = getSizeInPixels(objProps.embeddedObject.size)
 
     const imgHtml = createImageHtml(height, width, sourceUrl)
@@ -78,7 +77,11 @@ function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObject
 }
 
 function getSizeInPixels(size:DocsInlineObjectSizeModel):[height: number, width:number]{
-    const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
-    const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
+    const height = convertPointsToPixels(size.height.magnitude)
+    const width = convertPointsToPixels(size.width.magnitude)
     return [height, width]
+}
+
+function convertPointsToPixels(pointMagnitude:number):number{
+    return pointMagnitude * (4/3)
 }
