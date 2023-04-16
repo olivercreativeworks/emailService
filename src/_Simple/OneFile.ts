@@ -1,8 +1,7 @@
-import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
+import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
-import { Maybe } from "../Utility/Maybe"
-import { Utility } from "../Utility/Utility"
+import { Maybe, MaybeUtility } from "../Utility/Maybe"
 
 
 function callingBelow(){
@@ -14,15 +13,26 @@ function callingBelow(){
 
 
 function convertDocToHtml(doc:DocsDocumentModel){
-    const elements = getElements(doc)
-    const elementsAsString = elements.map(element_2D => element_2D.compactMap(convertElementToHtml(doc)))
-    const htmlString = elementsAsString.map(combineHtmlToSingleString)
-    
-    return htmlString
+    return getElements(doc).map(convertElementsToHtml(doc)).map(combineHtmlToSingleString)
+}
+
+function convertElementsToHtml(doc:DocsDocumentModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
+    return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(doc))
 }
 
 function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementModel>>{
-    return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(Utility.isNotNull)).map(List_2D.from2DArr)
+    return getBodyContent(doc).flatMap(getParagraphElementsFromContentList).map(List_2D.of)
+}
+
+function getBodyContent(doc:DocsDocumentModel):Maybe<List<DocsBodyContentModel>>{
+    return Maybe.of(doc.body?.content).map(List.fromArr)
+}
+function getParagraphElements(content: DocsBodyContentModel): Maybe<List<DocsParagraphElementModel>>{
+    return Maybe.of(content?.paragraph?.elements).map(List.fromArr)
+}
+
+function getParagraphElementsFromContentList(contentList:List<DocsBodyContentModel>):Maybe<List<List<DocsParagraphElementModel>>>{
+    return contentList.compactMap(getParagraphElements, MaybeUtility.isSomething).sequence(Maybe.of)
 }
 
 
@@ -42,7 +52,7 @@ function toString(list:List<string>):string{
     return list.asArray().join(" ")
 }
 
-function convertElementToHtml(doc:DocsDocumentModel): (paragraphElement:DocsParagraphElementModel) => string{
+function singleElementToHtml(doc:DocsDocumentModel): (paragraphElement:DocsParagraphElementModel) => string{
     return (paragraphElement:DocsParagraphElementModel) => elementIsImage(paragraphElement) ? 
         convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement) : 
         convertTextRunToString(paragraphElement.textRun)
