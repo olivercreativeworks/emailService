@@ -1,4 +1,4 @@
-import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
+import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
@@ -44,8 +44,6 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
     })
 }
 
-
-
 function createParagraphHtml(text:string){
     return `<p>${text}</p>`
 }
@@ -72,11 +70,15 @@ function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObject
     
     const sourceUrl = objProps.embeddedObject.imageProperties.contentUri
     
-    const size = objProps.embeddedObject.size
-    const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
-    const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
-    
+    const [height, width] = getSizeInPixels(objProps.embeddedObject.size)
+
     const imgHtml = createImageHtml(height, width, sourceUrl)
     
     return createLinkHtmlForElement(inlineObjectElement, imgHtml).orElse(imgHtml)
+}
+
+function getSizeInPixels(size:DocsInlineObjectSizeModel):[height: number, width:number]{
+    const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
+    const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
+    return [height, width]
 }
