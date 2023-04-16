@@ -1,4 +1,4 @@
-import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
+import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "./Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe, MaybeUtility } from "../Utility/Maybe"
@@ -11,6 +11,11 @@ function callingBelow(){
     convertDocToHtml(doc2).map(Logger.log)
 }
 
+export namespace HtmlConverter{
+    export function convertDocToHtml(doc:DocsDocumentModel){
+        return getElements(doc).map(convertElementsToHtml(doc)).map(combineHtmlToSingleString)
+    }
+}
 
 function convertDocToHtml(doc:DocsDocumentModel){
     return getElements(doc).map(convertElementsToHtml(doc)).map(combineHtmlToSingleString)
