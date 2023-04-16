@@ -1,4 +1,4 @@
-import { DocsDocumentModel, DocsInlineObjectElementModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
+import { DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
@@ -36,7 +36,7 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
         const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
         const hasInlineObjectId = !!(inlineObjectId)
         if (hasInlineObjectId){
-            return convertImageToString(doc, inlineObjectId, paragraphElement.inlineObjectElement)
+            return convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement)
         }
         else if (!hasInlineObjectId){
             return convertTextRunToString(paragraphElement.textRun)
@@ -67,9 +67,8 @@ function convertTextRunToString(textRun:DocsTextRunModel){
     return createLinkHtmlForElement(textRun, text).orElse(text)
 }
 
-function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, inlineObjectElement:DocsInlineObjectElementModel){
-    const inlineObjects = doc.inlineObjects
-    const objProps = inlineObjects[inlineObjectId]?.inlineObjectProperties
+function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObjectElement:DocsInlineObjectElementModel){
+    const objProps = inlineObjects[inlineObjectElement.inlineObjectId]?.inlineObjectProperties
     
     const sourceUrl = objProps.embeddedObject.imageProperties.contentUri
     
