@@ -15,25 +15,30 @@ function callingBelow(){
 function convertDocToHtml(doc:DocsDocumentModel){
     const elements = Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(i => !!i)).map(List_2D.from2DArr)
 
-    const elementsAsString = elements.map(
-        elements_2D => elements_2D.compactMap( paragraphElement => {
-            const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
-            const hasInlineObjectId = !!(inlineObjectId)
-            if (hasInlineObjectId){
-                return convertImageToString(doc, inlineObjectId, paragraphElement)
-            }
-            else if (!hasInlineObjectId){
-                return convertTextRunToString(paragraphElement)
-            }
-        })
-    )
+    const elementsAsString = elements.map(convertElementsToString(doc))
 
-    const htmlString = elementsAsString.map(string_2D => string_2D.reduce(
-        (str:string, list:List<string>) => str.concat(
-            `<p>${list.asArray().join(" ")}</p>`
-        ).trim() ," "))
+    const htmlString = elementsAsString.map(combineElementsToSingleString)
     
     return htmlString
+}
+
+function combineElementsToSingleString(string_2D:List_2D<string>):string{
+    return string_2D.reduce(
+        (str:string, list:List<string>) => str.concat(`<p>${list.asArray().join(" ")}</p>`)," "
+        )
+}
+
+function convertElementsToString(doc:DocsDocumentModel): (elements_2D:List_2D<DocsParagraphElementModel>) => List_2D<string>{
+    return (elements_2D:List_2D<DocsParagraphElementModel>) =>  elements_2D.compactMap( paragraphElement => {
+        const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
+        const hasInlineObjectId = !!(inlineObjectId)
+        if (hasInlineObjectId){
+            return convertImageToString(doc, inlineObjectId, paragraphElement)
+        }
+        else if (!hasInlineObjectId){
+            return convertTextRunToString(paragraphElement)
+        }
+    })
 }
 
 function convertTextRunToString(paragraphElement:DocsParagraphElementModel){
