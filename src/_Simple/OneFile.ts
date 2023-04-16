@@ -44,16 +44,20 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
     })
 }
 
+function createHtmlTag(tag:string, innerText:string="", attributes:string=""):string{
+    return `<${tag} ${attributes}>${innerText}</${tag}>`
+}
+
 function createParagraphHtml(text:string){
-    return `<p>${text}</p>`
+    return createHtmlTag("p", text)
 }
 
 function createImageHtml(height:number, width:number, sourceUrl:string):string{
-    return `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
+    return createHtmlTag("img", null, `height="${height}" width="${width}" src="${sourceUrl}"`)
 }
 
 function createLinkHtml(link:string, innerText:string):string{
-    return `<a href="${link}" target="blank">${innerText}</a>`
+    return createHtmlTag("a", innerText, `href="${link}" target="blank"`)
 }
 
 function createLinkHtmlForElement(element: DocsInlineObjectElementModel | DocsTextRunModel, innerText:string): Maybe<string>{
