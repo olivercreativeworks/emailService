@@ -44,11 +44,17 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
     })
 }
 
+function createLinkHtml(link:string, innerText:string):string{
+    return `<a href="${link}" target="blank">${innerText}</a>`
+}
+
+function createLinkHtmlForElement(element: DocsInlineObjectElementModel | DocsTextRunModel, innerText:string): Maybe<string>{
+    return Maybe.of(element.textStyle?.link?.url).map(link => createLinkHtml(link, innerText))
+}
+
 function convertTextRunToString(textRun:DocsTextRunModel){
     const text = textRun.content
-    const link = textRun.textStyle?.link?.url
-    const hasLink = !! link
-    return hasLink ? `<a href="${link}" target="blank">${text}</a>` : text
+    return createLinkHtmlForElement(textRun, text).orElse(text)
 }
 
 function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, inlineObjectElement:DocsInlineObjectElementModel){
@@ -63,7 +69,5 @@ function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, inli
     
     const imgHtml = `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
     
-    const link = inlineObjectElement?.textStyle?.link?.url
-    const hasLink = !! link
-    return hasLink ? `<a href="${link}" target="blank">${imgHtml}</a>` : imgHtml
+    return createLinkHtmlForElement(inlineObjectElement, imgHtml).orElse(imgHtml)
 }
