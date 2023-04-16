@@ -48,6 +48,33 @@ function createHtmlTag(tag:string, innerText:string="", attributes:string=""):st
     return `<${tag} ${attributes}>${innerText}</${tag}>`
 }
 
+interface LinkAttributes{
+    href:string
+    target:string
+}
+interface ImageAttributes{
+    src:string
+    width:number
+    height:number
+}
+
+function createAttributesString(attributes:LinkAttributes | ImageAttributes):string{
+    return Object.entries(attributes).map(joinAttributeWithValue).join(" ")
+    
+    function joinAttributeWithValue([attribute, value]:[string, string]):string{
+        return `${attribute}="${value}"`
+    }
+}
+
+function createImageAttributes(height: number, width:number, src:string):ImageAttributes{
+    return {height, width, src}
+}
+
+function createLinkAttributes(href:string, target:string= "_blank"):LinkAttributes{
+    return {href, target}
+}
+
+
 function createParagraphHtml(text:string){
     return createHtmlTag("p", text)
 }
