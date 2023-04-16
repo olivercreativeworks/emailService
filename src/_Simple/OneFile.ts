@@ -13,13 +13,15 @@ function callingBelow(){
 
 
 function convertDocToHtml(doc:DocsDocumentModel){
-    const elements = Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(i => !!i)).map(List_2D.from2DArr)
-
+    const elements = getElements(doc)
     const elementsAsString = elements.map(convertElementsToString(doc))
-
     const htmlString = elementsAsString.map(combineElementsToSingleString)
     
     return htmlString
+}
+
+function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementModel>>{
+    return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(i => !!i)).map(List_2D.from2DArr)
 }
 
 function combineElementsToSingleString(string_2D:List_2D<string>):string{
