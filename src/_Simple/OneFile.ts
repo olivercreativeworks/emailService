@@ -15,7 +15,7 @@ function callingBelow(){
 
 function convertDocToHtml(doc:DocsDocumentModel){
     const elements = getElements(doc)
-    const elementsAsString = elements.map(convertElementsToHtml(doc))
+    const elementsAsString = elements.map(element_2D => element_2D.compactMap(convertElementToHtml(doc)))
     const htmlString = elementsAsString.map(combineHtmlToSingleString)
     
     return htmlString
@@ -25,25 +25,27 @@ function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementMo
     return Maybe.of(doc.body?.content?.map(content => content?.paragraph?.elements).filter(Utility.isNotNull)).map(List_2D.from2DArr)
 }
 
+
 function combineHtmlToSingleString(string_2D:List_2D<string>):string{
-    return string_2D.reduce(
-        (str:string, list:List<string>) => str.concat(createParagraphHtml(list.asArray().join(" ")))," "
-        )
+    return string_2D.reduce(combineListsToParagraphHtml," ")
 }
 
-function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<DocsParagraphElementModel>) => List_2D<string>{
-    return (elements_2D:List_2D<DocsParagraphElementModel>) =>  elements_2D.compactMap( paragraphElement => elementIsImage(paragraphElement) ? convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement) : convertTextRunToString(paragraphElement.textRun)
-    //     {
-    //     const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
-    //     const hasInlineObjectId = !!(inlineObjectId)
-    //     if (hasInlineObjectId){
-    //         return convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement)
-    //     }
-    //     else if (!hasInlineObjectId){
-    //         return convertTextRunToString(paragraphElement.textRun)
-    //     }
-    // }
-    )
+function combineListsToParagraphHtml(str:string, list:List<string>):string{
+    return str.concat(listToParagraphHtml(list))
+}
+
+function listToParagraphHtml(list:List<string>):string{
+    return createParagraphHtml(toString(list))
+}
+
+function toString(list:List<string>):string{
+    return list.asArray().join(" ")
+}
+
+function convertElementToHtml(doc:DocsDocumentModel): (paragraphElement:DocsParagraphElementModel) => string{
+    return (paragraphElement:DocsParagraphElementModel) => elementIsImage(paragraphElement) ? 
+        convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement) : 
+        convertTextRunToString(paragraphElement.textRun)
 }
 
 function elementIsImage(element:DocsParagraphElementModel):boolean{
