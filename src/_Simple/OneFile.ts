@@ -23,11 +23,7 @@ function convertDocToHtml(doc:DocsDocumentModel){
                 return convertImageToString(doc, inlineObjectId, paragraphElement)
             }
             else if (!hasInlineObjectId){
-                const textRun = paragraphElement.textRun 
-                const text = textRun.content
-                const link = textRun.textStyle?.link?.url
-                const hasLink = !! link
-                return hasLink ? `<a href="${link}" target="blank">${text}</a>` : text
+                return convertTextRunToString(paragraphElement)
             }
         })
     )
@@ -38,6 +34,14 @@ function convertDocToHtml(doc:DocsDocumentModel){
         ).trim() ," "))
     
     return htmlString
+}
+
+function convertTextRunToString(paragraphElement:DocsParagraphElementModel){
+    const textRun = paragraphElement.textRun 
+    const text = textRun.content
+    const link = textRun.textStyle?.link?.url
+    const hasLink = !! link
+    return hasLink ? `<a href="${link}" target="blank">${text}</a>` : text
 }
 
 function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, paragraphElement:DocsParagraphElementModel){
