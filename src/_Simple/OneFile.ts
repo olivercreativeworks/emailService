@@ -27,7 +27,7 @@ function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementMo
 
 function combineHtmlToSingleString(string_2D:List_2D<string>):string{
     return string_2D.reduce(
-        (str:string, list:List<string>) => str.concat(`<p>${list.asArray().join(" ")}</p>`)," "
+        (str:string, list:List<string>) => str.concat(createParagraphHtml(list.asArray().join(" ")))," "
         )
 }
 
@@ -45,7 +45,12 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
 }
 
 
-function createImageHtml(height: number, width:number, sourceUrl:string):string{
+
+function createParagraphHtml(text:string){
+    return `<p>${text}</p>`
+}
+
+function createImageHtml(height:number, width:number, sourceUrl:string):string{
     return `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
 }
 
