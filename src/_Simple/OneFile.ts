@@ -1,4 +1,4 @@
-import { DocsDocumentModel } from "../Main/Models/DocsDocumentModel"
+import { DocsDocumentModel, DocsParagraphElementModel } from "../Main/Models/DocsDocumentModel"
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe } from "../Utility/Maybe"
@@ -20,20 +20,7 @@ function convertDocToHtml(doc:DocsDocumentModel){
             const inlineObjectId = paragraphElement?.inlineObjectElement?.inlineObjectId
             const hasInlineObjectId = !!(inlineObjectId)
             if (hasInlineObjectId){
-                const inlineObjects = doc.inlineObjects
-                const objProps = inlineObjects[inlineObjectId]?.inlineObjectProperties
-                
-                const sourceUrl = objProps.embeddedObject.imageProperties.contentUri
-                
-                const size = objProps.embeddedObject.size
-                const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
-                const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
-                
-                const imgHtml = `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
-                
-                const link = paragraphElement.inlineObjectElement?.textStyle?.link?.url
-                const hasLink = !! link
-                return hasLink ? `<a href="${link}" target="blank">${imgHtml}</a>` : imgHtml
+                return convertImageToString(doc, inlineObjectId, paragraphElement)
             }
             else if (!hasInlineObjectId){
                 const textRun = paragraphElement.textRun 
@@ -50,6 +37,22 @@ function convertDocToHtml(doc:DocsDocumentModel){
             `<p>${list.asArray().join(" ")}</p>`
         ).trim() ," "))
     
-    // htmlString.map(Logger.log)
     return htmlString
+}
+
+function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, paragraphElement:DocsParagraphElementModel){
+    const inlineObjects = doc.inlineObjects
+    const objProps = inlineObjects[inlineObjectId]?.inlineObjectProperties
+    
+    const sourceUrl = objProps.embeddedObject.imageProperties.contentUri
+    
+    const size = objProps.embeddedObject.size
+    const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
+    const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
+    
+    const imgHtml = `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
+    
+    const link = paragraphElement.inlineObjectElement?.textStyle?.link?.url
+    const hasLink = !! link
+    return hasLink ? `<a href="${link}" target="blank">${imgHtml}</a>` : imgHtml
 }
