@@ -44,6 +44,11 @@ function convertElementsToHtml(doc:DocsDocumentModel): (elements_2D:List_2D<Docs
     })
 }
 
+
+function createImageHtml(height: number, width:number, sourceUrl:string):string{
+    return `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
+}
+
 function createLinkHtml(link:string, innerText:string):string{
     return `<a href="${link}" target="blank">${innerText}</a>`
 }
@@ -67,7 +72,7 @@ function convertImageToString(doc:DocsDocumentModel, inlineObjectId:string, inli
     const height = size.height.unit == "PT" ? size.height.magnitude * (4/3) : size.height.magnitude
     const width = size.height.unit == "PT" ? size.width.magnitude * (4/3) : size.width.magnitude
     
-    const imgHtml = `<img height="${height}" width="${width}" src="${sourceUrl}"></img>`
+    const imgHtml = createImageHtml(height, width, sourceUrl)
     
     return createLinkHtmlForElement(inlineObjectElement, imgHtml).orElse(imgHtml)
 }
