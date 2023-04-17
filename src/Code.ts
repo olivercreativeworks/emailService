@@ -2,8 +2,10 @@ import { DocsDocumentModel } from "./_Simple/DocsDocumentModel"
 import { HtmlConverter } from "./_Simple/OneFile"
 import { Funcs } from "./Utility/Utility"
 
+
 function main(){
-    HtmlConverter.docsToHtml()
+    const ids = getIds()
+    HtmlConverter.docsToHtml(...ids)
     // const doc1 = Docs.Documents.get('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo') as DocsDocumentModel
     // const doc2 = Docs.Documents.get('1-ngp__00XaqhpnNaSJ4xXDBn7UKkAxM-kdab1a5avWI') as DocsDocumentModel
     // const convertedDoc1 = HtmlConverter.convertDocToHtml(doc1)
@@ -25,6 +27,9 @@ function main(){
     // docsAsHtml.map(html => sendEmail(recipients, subjectLine, html))
 }
 
+function getIds(){
+    return ['1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo', '1-ngp__00XaqhpnNaSJ4xXDBn7UKkAxM-kdab1a5avWI']
+}
 
 function doGet(){
     return HtmlService.createHtmlOutputFromFile("src/index")
