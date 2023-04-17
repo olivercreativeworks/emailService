@@ -19,14 +19,21 @@ class EmailSubjectValidatonError{
     }
 }
 
-interface Email{
+export namespace Email{
+    export function createEmail(recipients:List<EmailAddress>, subject:string, htmlBody:string):IEmail{
+        const validSubject = EmailSubjectLengthValidator.validate(subject, EmailSubjectValidatonError.subjectIsTooLongError)
+        return {recipients, subject:validSubject, htmlBody}
+    }
+}
+
+
+interface IEmail{
     recipients: List<EmailAddress>
     subject: string
     htmlBody: string
 }
 
-export function sendEmail(email:Email):void{
+export function sendEmail(email:IEmail):void{
     const recipientsAsString = email.recipients.asArray().join(",")
-    const validSubject = EmailSubjectLengthValidator.validate(email.subject, EmailSubjectValidatonError.subjectIsTooLongError)
-    GmailApp.sendEmail(recipientsAsString, validSubject, null, {"htmlBody":email.htmlBody,"name":"Oliver Allen-Cummings"})
+    GmailApp.sendEmail(recipientsAsString, email.subject, null, {"htmlBody":email.htmlBody,"name":"Oliver Allen-Cummings"})
 }
