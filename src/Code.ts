@@ -1,5 +1,5 @@
 import { DocsDocumentModel } from "./_Simple/DocsDocumentModel"
-import { Email, sendEmail } from "./_Simple/Email"
+import { Email } from "./_Simple/Email"
 import { HtmlConverter } from "./_Simple/OneFile"
 import { List } from "./Utility/List"
 import { Funcs } from "./Utility/Utility"
@@ -12,7 +12,7 @@ function main(){
         List.of("oliver@urbanupbound.org"),
         "Testing this new email",
         htmlBody
-    )).map(Logger.log)
+    )).map(Email.sendEmail)
 
     // sendEmail()
     // const doc1 = Docs.Documents.get('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo') as DocsDocumentModel
