@@ -16,10 +16,6 @@ export namespace HtmlConverter{
     }
 }
 
-function convertDocToHtml(doc:DocsDocumentModel){
-    return getElements(doc).map(convertElementsToHtml(doc.inlineObjects)).map(combineHtmlToSingleString)
-}
-
 function convertElementsToHtml(inlineObjects:DocsInlineObjectsModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
     return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(inlineObjects))
 }
