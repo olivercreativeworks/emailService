@@ -1,4 +1,5 @@
 import { Applicative } from "./Interfaces"
+import { List } from "./List"
 import { Maybe } from "./Maybe"
 
 export namespace Funcs{
@@ -8,6 +9,10 @@ export namespace Funcs{
 
     export function concatStrings(...strings:Array<string>):string{
         return strings.reduce((str1:string, str2:string) => str1.concat(str2))
+    }
+
+    export function reduceListToString(list:List<string>):string{
+        return list.reduce(Funcs.concatStrings)
     }
 
     export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
