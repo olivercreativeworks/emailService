@@ -13,16 +13,16 @@ function callingBelow(){
 
 export namespace HtmlConverter{
     export function convertDocToHtml(doc:DocsDocumentModel){
-        return getElements(doc).map(convertElementsToHtml(doc)).map(combineHtmlToSingleString)
+        return getElements(doc).map(convertElementsToHtml(doc.inlineObjects)).map(combineHtmlToSingleString)
     }
 }
 
 function convertDocToHtml(doc:DocsDocumentModel){
-    return getElements(doc).map(convertElementsToHtml(doc)).map(combineHtmlToSingleString)
+    return getElements(doc).map(convertElementsToHtml(doc.inlineObjects)).map(combineHtmlToSingleString)
 }
 
-function convertElementsToHtml(doc:DocsDocumentModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
-    return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(doc))
+function convertElementsToHtml(inlineObjects:DocsInlineObjectsModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
+    return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(inlineObjects))
 }
 
 function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementModel>>{
@@ -57,9 +57,9 @@ function toString(list:List<string>):string{
     return list.asArray().join(" ")
 }
 
-function singleElementToHtml(doc:DocsDocumentModel): (paragraphElement:DocsParagraphElementModel) => string{
+function singleElementToHtml(inlineObjects:DocsInlineObjectsModel): (paragraphElement:DocsParagraphElementModel) => string{
     return (paragraphElement:DocsParagraphElementModel) => elementIsImage(paragraphElement) ? 
-        convertImageToString(doc.inlineObjects, paragraphElement.inlineObjectElement) : 
+        convertImageToString(inlineObjects, paragraphElement.inlineObjectElement) : 
         convertTextRunToString(paragraphElement.textRun)
 }
 
@@ -139,6 +139,8 @@ function getSizeInPixels(size:DocsInlineObjectSizeModel):[height: number, width:
     return [height, width]
 }
 
+const POINTS_TO_PIXEL_RATIO = 4/3
+
 function convertPointsToPixels(pointMagnitude:number):number{
-    return pointMagnitude * (4/3)
+    return pointMagnitude * POINTS_TO_PIXEL_RATIO
 }
