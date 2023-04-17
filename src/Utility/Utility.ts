@@ -6,10 +6,10 @@ export namespace Funcs{
         return !!(x)
     }
 
-    export function concatStrings(str1:string, str2:string):string{
-        return str1.concat(str2)
+    export function concatStrings(...strings:Array<string>):string{
+        return strings.reduce((str1:string, str2:string) => str1.concat(str2))
     }
-    
+
     export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Maybe<A>, applicative2:Maybe<B>):Maybe<C>
     export function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, applicative1:Applicative<A>, applicative2:Applicative<B>):Applicative<C>{
         return applicative1.map(fn).ap(applicative2)
