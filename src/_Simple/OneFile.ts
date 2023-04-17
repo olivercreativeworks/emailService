@@ -89,7 +89,8 @@ function createAttributesString(attributes:(LinkAttributes | ImageAttributes)):s
     }
 }
 
-function createImageAttributes(height: number, width:number, src:string):ImageAttributes{
+function createImageAttributes(size:SizeInPixels, src:string):ImageAttributes{
+    const {height, width} = size
     return {height, width, src}
 }
 
@@ -127,15 +128,27 @@ function convertImageToString(inlineObjects:DocsInlineObjectsModel, inlineObject
 
 function getImageAttributes(inlineObjectProperties: DocsInlineObjectPropertiesModel):ImageAttributes{
     const sourceUrl = inlineObjectProperties.embeddedObject.imageProperties.contentUri   
-    const [height, width] = getSizeInPixels(inlineObjectProperties.embeddedObject.size)
-    return createImageAttributes(height, width, sourceUrl)
- 
+    const size = getSizeInPixels(inlineObjectProperties.embeddedObject.size)
+    return createImageAttributes(size, sourceUrl)
 }
 
-function getSizeInPixels(size:DocsInlineObjectSizeModel):[height: number, width:number]{
+interface Size<unitOfMeasure extends keyof typeof IMAGE_SIZE_UNITS>{
+    height:number
+    width:number
+    unit:unitOfMeasure
+}
+
+type SizeInPixels = Size<"pixel">
+
+const IMAGE_SIZE_UNITS = {
+    pixel: "pixel"
+} as const
+
+function getSizeInPixels(size:DocsInlineObjectSizeModel):SizeInPixels{
     const height = convertPointsToPixels(size.height.magnitude)
     const width = convertPointsToPixels(size.width.magnitude)
-    return [height, width]
+    const unit = IMAGE_SIZE_UNITS.pixel
+    return {height, width, unit}
 }
 
 const POINTS_TO_PIXEL_RATIO = 4/3
