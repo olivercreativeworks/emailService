@@ -102,7 +102,7 @@ function createParagraphHtml(text:string){
 }
 
 function createImageHtml(imageAttributes:ImageAttributes):string{
-    return createHtmlTag("img", null, createAttributesString(imageAttributes))
+    return createHtmlTag("img", "", createAttributesString(imageAttributes))
 }
 
 function createLinkHtml(linkAttributes:LinkAttributes, innerText:string):string{
