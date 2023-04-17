@@ -2,6 +2,7 @@ import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, 
 import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe, MaybeUtility } from "../Utility/Maybe"
+import { Funcs } from "../Utility/Utility"
 
 
 function callingBelow(){
@@ -14,6 +15,19 @@ function callingBelow(){
 export namespace HtmlConverter{
     export function convertDocToHtml(doc:DocsDocumentModel){
         return getElements(doc).map(convertElementsToHtml(doc.inlineObjects)).map(combineHtmlToSingleString)
+    }
+    export function docsToHtml(...docIds:Array<string>):Maybe<string>{
+        const doc1 = Docs.Documents.get('1Y29ar26MwC5tYw1-fLoh2Ndget5jMLUcGOdwmMd3vwo') as DocsDocumentModel
+        const doc2 = Docs.Documents.get('1-ngp__00XaqhpnNaSJ4xXDBn7UKkAxM-kdab1a5avWI') as DocsDocumentModel
+        const convertedDoc1 = convertDocToHtml(doc1)
+        const convertedDoc2 = convertDocToHtml(doc2)
+        const concatDocs = Funcs.curryLiftA2(
+            Funcs.concatStrings, 
+            convertedDoc1, 
+            convertedDoc2
+        )
+        concatDocs.map(Logger.log)
+        return concatDocs
     }
 }
 
