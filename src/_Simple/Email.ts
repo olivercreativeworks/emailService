@@ -3,6 +3,12 @@ import { List } from "../Utility/List"
 
 export type EmailAddress = `${string}@${string}`
 
+interface IEmail{
+    recipients: List<EmailAddress>
+    subject: string
+    htmlBody: string
+}
+
 class EmailSubjectLengthValidator{
     static getMaxSubjectLength(){
         return 250
@@ -24,16 +30,9 @@ export namespace Email{
         const validSubject = EmailSubjectLengthValidator.validate(subject, EmailSubjectValidatonError.subjectIsTooLongError)
         return {recipients, subject:validSubject, htmlBody}
     }
-}
-
-
-interface IEmail{
-    recipients: List<EmailAddress>
-    subject: string
-    htmlBody: string
-}
-
-export function sendEmail(email:IEmail):void{
-    const recipientsAsString = email.recipients.asArray().join(",")
-    GmailApp.sendEmail(recipientsAsString, email.subject, null, {"htmlBody":email.htmlBody,"name":"Oliver Allen-Cummings"})
+    
+    export function sendEmail(email:IEmail):void{
+        const recipientsAsString = email.recipients.asArray().join(",")
+        GmailApp.sendEmail(recipientsAsString, email.subject, null, {"htmlBody":email.htmlBody,"name":"Oliver Allen-Cummings"})
+    }
 }
