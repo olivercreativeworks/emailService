@@ -1,7 +1,7 @@
 import { List } from "../Utility/List"
 
 
-export type Email = `${string}@${string}`
+export type EmailAddress = `${string}@${string}`
 
 class EmailSubjectLengthValidator{
     static getMaxSubjectLength(){
@@ -19,8 +19,14 @@ class EmailSubjectValidatonError{
     }
 }
 
-export function sendEmail(recipients:List<Email>, subject:string, htmlBody:string):void{
-    const recipientsAsString = recipients.asArray().join(",")
-    const validSubject = EmailSubjectLengthValidator.validate(subject, EmailSubjectValidatonError.subjectIsTooLongError)
-    GmailApp.sendEmail(recipientsAsString, validSubject, null, {htmlBody,"name":"Oliver Allen-Cummings"})
+interface Email{
+    recipients: List<EmailAddress>
+    subject: string
+    htmlBody: string
+}
+
+export function sendEmail(email:Email):void{
+    const recipientsAsString = email.recipients.asArray().join(",")
+    const validSubject = EmailSubjectLengthValidator.validate(email.subject, EmailSubjectValidatonError.subjectIsTooLongError)
+    GmailApp.sendEmail(recipientsAsString, validSubject, null, {"htmlBody":email.htmlBody,"name":"Oliver Allen-Cummings"})
 }
