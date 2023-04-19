@@ -17,6 +17,10 @@ export class List_2D<BaseElement>{
         return new List_2D(x)
     }
 
+    static from<A>(x:A): List_2D<A>{
+        return List_2D.from2DArr([[x]])
+    }
+
     map<B>(fn:(value:BaseElement) => B): List_2D<B> {
         return List_2D.of(this.$value.map(list => list.map(fn)))
     }
