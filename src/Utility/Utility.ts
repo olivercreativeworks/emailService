@@ -44,9 +44,19 @@ export namespace Funcs{
 
     type MonadMethodReturnType<A extends Monad<unknown>, methodName extends keyof Monad<unknown>> = ReturnType< A[methodName]>
     type MonadType<ContainerType extends Monad<unknown>, ValueType> = MonadMethodReturnType<ContainerType, "map"> & Monad<ValueType>
-
+    
     export function map<A,B,C extends Monad<B>>(fn:(arg:A) => B, returnType:(arg:B) => C): (monad:MonadType<C, A>) => C  {
         return (monad:MonadType<C,A>) => monad.map(fn) as C
+    }
+    
+    type CompactMapperReturnType<A extends CompactMapper<unknown>> = ReturnType< A["compactMap"]>
+    type CompactMapperType<ContainerType extends CompactMapper<unknown>, ValueType> = CompactMapperReturnType<ContainerType> & CompactMapper<ValueType>
+    interface CompactMapper<Value>{
+        compactMap<B>(fn:(value:Value) => B, filterFn:(x:B) => boolean): CompactMapper<B>
+    }
+
+    export function compactMap<A,B,C extends CompactMapper<B>>(fn:(arg:A) => B, returnType:(arg:B) => C, filterFn:(x:B) => boolean = isNotNull): (compactMapper:CompactMapperType<C, A>) => C  {
+        return (compactMapper:CompactMapperType<C,A>) => compactMapper.compactMap(fn, filterFn) as C
     }
 }
 
