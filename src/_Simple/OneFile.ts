@@ -1,5 +1,5 @@
 import { DocsBodyContentModel, DocsDocumentModel, DocsInlineObjectElementModel, DocsInlineObjectPropertiesModel, DocsInlineObjectSizeModel, DocsInlineObjectsModel, DocsParagraphElementModel, DocsTextRunModel } from "./DocsDocumentModel"
-import { List, reduceToList, toList } from "../Utility/List"
+import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe, MaybeUtility } from "../Utility/Maybe"
 import { Funcs } from "../Utility/Utility"
@@ -128,27 +128,47 @@ function getImageAttributes(inlineObjectProperties: DocsInlineObjectPropertiesMo
     return createImageAttributes(size, sourceUrl)
 }
 
-interface Size<unitOfMeasure extends keyof typeof IMAGE_SIZE_UNITS>{
+interface Size<unitOfMeasure extends typeof IMAGE_SIZE_UNITS[keyof typeof IMAGE_SIZE_UNITS]>{
     height:number
     width:number
     unit:unitOfMeasure
 }
 
 type SizeInPixels = Size<"pixel">
+type SizeInPoint = Size<"point"> | Size<"PT">
 
 const IMAGE_SIZE_UNITS = {
-    pixel: "pixel"
+    pixel: "pixel",
+    point: "point",
+    pt:"PT"
 } as const
 
 function getSizeInPixels(size:DocsInlineObjectSizeModel):SizeInPixels{
-    const height = convertPointsToPixels(size.height.magnitude)
-    const width = convertPointsToPixels(size.width.magnitude)
-    const unit = IMAGE_SIZE_UNITS.pixel
-    return {height, width, unit}
+    const height = size.height.magnitude
+    const width = size.width.magnitude
+    const unit = size.width.unit || size.height.unit // This will be "PT"
+    return pointToPixel({height, width, unit})
 }
+
+function createSizeInPixels(height:number, width:number):SizeInPixels{
+    return {height, width, unit:IMAGE_SIZE_UNITS.pixel}
+}
+
+function pointToPixel(size:SizeInPoint):SizeInPixels{
+    const height = applyPointToPixelRatio(size.height)
+    const width = applyPointToPixelRatio(size.width)
+    return createSizeInPixels(height, width)
+}
+
+// function getSizeInPixels(size:DocsInlineObjectSizeModel):SizeInPixels{
+//     const height = convertPointsToPixels(size.height.magnitude)
+//     const width = convertPointsToPixels(size.width.magnitude)
+//     const unit = IMAGE_SIZE_UNITS.pixel
+//     return {height, width, unit}
+// }
 
 const POINTS_TO_PIXEL_RATIO = 4/3
 
-function convertPointsToPixels(pointMagnitude:number):number{
+function applyPointToPixelRatio(pointMagnitude:number):number{
     return pointMagnitude * POINTS_TO_PIXEL_RATIO
 }
