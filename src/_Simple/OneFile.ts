@@ -3,10 +3,11 @@ import { List } from "../Utility/List"
 import { List_2D } from "../Utility/List_2D"
 import { Maybe, MaybeUtility } from "../Utility/Maybe"
 import { Funcs } from "../Utility/Utility"
+import { Monad } from "../Utility/Interfaces"
 
 export namespace HtmlConverter{
     export function convertDocToHtml(doc:DocsDocumentModel){
-        return getElements(doc).map(convertElementsToHtml(doc.inlineObjects)).map(combineHtmlToSingleString)
+        return getElements(doc).map(Funcs.compactMap(elementsToHtml(doc.inlineObjects), List_2D.from)).map(combineHtmlToSingleString)
     }
     
     export function docsToHtml(...docs:Array<DocsDocumentModel>):Maybe<string>{
@@ -16,10 +17,14 @@ export namespace HtmlConverter{
     }
 }
 
-function convertElementsToHtml(inlineObjects:DocsInlineObjectsModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
-    return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(inlineObjects))
+// function convertElementsToHtml(inlineObjects:DocsInlineObjectsModel): (elements:List_2D<DocsParagraphElementModel>) => List_2D<string>{
+//     return (elements:List_2D<DocsParagraphElementModel>) => elements.compactMap(singleElementToHtml(inlineObjects))
+// }
+function elementsToHtml(inlineObjects:DocsInlineObjectsModel): (paragraphElement:DocsParagraphElementModel) => string{
+    return (paragraphElement:DocsParagraphElementModel) => elementIsImage(paragraphElement) ? 
+        convertImageToString(inlineObjects, paragraphElement.inlineObjectElement) : 
+        convertTextRunToString(paragraphElement.textRun)
 }
-
 function getElements(doc:DocsDocumentModel):Maybe<List_2D<DocsParagraphElementModel>>{
     return getBodyContent(doc).flatMap(getParagraphElementsFromContentList).map(List_2D.of)
 }
@@ -52,11 +57,7 @@ function toString(list:List<string>):string{
     return list.asArray().join(" ")
 }
 
-function singleElementToHtml(inlineObjects:DocsInlineObjectsModel): (paragraphElement:DocsParagraphElementModel) => string{
-    return (paragraphElement:DocsParagraphElementModel) => elementIsImage(paragraphElement) ? 
-        convertImageToString(inlineObjects, paragraphElement.inlineObjectElement) : 
-        convertTextRunToString(paragraphElement.textRun)
-}
+
 
 function elementIsImage(element:DocsParagraphElementModel):boolean{
     const hasInlineObjectId = !!(element?.inlineObjectElement?.inlineObjectId)
