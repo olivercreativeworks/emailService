@@ -38,7 +38,7 @@ export namespace HtmlConverter{
     
     function imageToString(inlineObjects:DocsInlineObjectsModel, inlineObjectElement:DocsInlineObjectElementModel){
         const objProps = inlineObjects[inlineObjectElement.inlineObjectId]?.inlineObjectProperties
-        const imageAttributes = HtmlWrapper.getImageAttributes(objProps)
+        const imageAttributes = getImageAttributes(objProps)
         const imgHtml = HtmlWrapper.makeImage(imageAttributes)
         return createLinkHtmlForElement(inlineObjectElement, imgHtml).orElse(imgHtml)
     }
@@ -51,6 +51,20 @@ export namespace HtmlConverter{
         const text = textRun.content
         return createLinkHtmlForElement(textRun, text).orElse(text)
     }
+
+
+    export function getImageAttributes(inlineObjectProperties: DocsInlineObjectPropertiesModel):HtmlWrapper.ImageAttributes{
+        const sourceUrl = inlineObjectProperties.embeddedObject.imageProperties.contentUri   
+        const size = getSizeInPixels(inlineObjectProperties.embeddedObject.size)
+        return HtmlWrapper.createImageAttributes(size, sourceUrl)
+    }
+
+    function getSizeInPixels(size:DocsInlineObjectSizeModel):HtmlWrapper.SizeInPixels{
+        const height = size.height.magnitude
+        const width = size.width.magnitude
+        const unit = size.width.unit || size.height.unit // this will be "PT"
+        return HtmlWrapper.pointToPixel({height, width, unit}) 
+    }
 }
 
 namespace HtmlWrapper{
@@ -58,7 +72,7 @@ namespace HtmlWrapper{
         return `<${tag} ${attributes}>${innerText}</${tag}>`
     }
 
-    interface LinkAttributes{
+    export interface LinkAttributes{
         href:string
         target:string
     }
@@ -75,23 +89,23 @@ namespace HtmlWrapper{
     export function makeImage(imageAttributes:ImageAttributes):string{
         return makeHtml("img", "", createAttributesString(imageAttributes))
     }
-
+    
+    export function createImageAttributes(size:SizeInPixels, src:string):ImageAttributes{
+        const {height, width} = size
+        return {height, width, src}
+    }
     export function makeParagraph(text:string){
         return makeHtml("p", text)
     }
 
-    interface ImageAttributes{
+    export interface ImageAttributes{
         src:string
         width:number
         height:number
     }
-    export function getImageAttributes(inlineObjectProperties: DocsInlineObjectPropertiesModel):ImageAttributes{
-        const sourceUrl = inlineObjectProperties.embeddedObject.imageProperties.contentUri   
-        const size = getSizeInPixels(inlineObjectProperties.embeddedObject.size)
-        return createImageAttributes(size, sourceUrl)
-    }
 
-    function createAttributesString(attributes:(LinkAttributes | ImageAttributes)):string{
+
+    export function createAttributesString(attributes:(LinkAttributes | ImageAttributes)):string{
         return Object.entries(attributes).map(joinAttributeWithValue).join(" ")
         
         function joinAttributeWithValue([attribute, value]:[string, string]):string{
@@ -99,10 +113,7 @@ namespace HtmlWrapper{
         }
     }
 
-    function createImageAttributes(size:SizeInPixels, src:string):ImageAttributes{
-        const {height, width} = size
-        return {height, width, src}
-    }
+
     
     interface Size<unitOfMeasure extends typeof IMAGE_SIZE_UNITS[keyof typeof IMAGE_SIZE_UNITS]>{
         height:number
@@ -110,7 +121,7 @@ namespace HtmlWrapper{
         unit:unitOfMeasure
     }
     
-    type SizeInPixels = Size<"pixel">
+    export type SizeInPixels = Size<"pixel">
     type SizeInPoint = Size<"point"> | Size<"PT">
     
     const IMAGE_SIZE_UNITS = {
@@ -119,13 +130,8 @@ namespace HtmlWrapper{
         pt:"PT"
     } as const
     
-    function getSizeInPixels(size:DocsInlineObjectSizeModel):SizeInPixels{
-        const height = size.height.magnitude
-        const width = size.width.magnitude
-        const unit = size.width.unit || size.height.unit // this will be "PT"
-        return pointToPixel({height, width, unit}) 
-    }
-    function pointToPixel(size:SizeInPoint):SizeInPixels{
+
+    export function pointToPixel(size:SizeInPoint):SizeInPixels{
         const height = applyPointToPixelRatio(size.height)
         const width = applyPointToPixelRatio(size.width)
         return createSizeInPixels(height, width)
