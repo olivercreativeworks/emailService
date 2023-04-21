@@ -1,5 +1,9 @@
-import { Applicative } from "./Interfaces"
 import { List } from "./List"
+
+interface Applicative<Value>{
+    map<A>(fn:(value:Value) => A): Applicative<A>
+    ap<A, B>(this: Applicative<(value:A) => B>, otherApplicative: Applicative<A>): Applicative<B>
+}
 
 export class List_2D<BaseElement>{
     private $value: List<List<BaseElement>>
@@ -19,6 +23,10 @@ export class List_2D<BaseElement>{
 
     static from<A>(x:A): List_2D<A>{
         return List_2D.from2DArr([[x]])
+    }
+
+    mapList<B>(fn: (value:List<BaseElement>) => List<B>): List_2D<B>{
+        return List_2D.of(this.asList().map(fn))
     }
 
     map<B>(fn:(value:BaseElement) => B): List_2D<B> {

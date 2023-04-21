@@ -1,12 +1,11 @@
-import { MonadDefinitions } from "./Interfaces"
 
-interface Monad<Value> extends MonadDefinitions.Monad<Value>{
+interface Monad<Value>{
+    map<A>(fn:(value:Value) => A): Monad<A>
+    join<A>(this:Monad<Monad<A>>): Monad<A>
+    flatMap<A>(fn:(value:Value) => Monad<A>): Monad<A>
 }
 
-
 export type UnwrapMaybe<A extends Maybe<unknown>> = ReturnType<A["unsafeUnwrap"]>
-
-
 
 export class Maybe<Value> implements Monad<Value>{
     private $value?:Value

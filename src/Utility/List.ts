@@ -1,4 +1,13 @@
-import { Monad, Applicative } from "./Interfaces"
+interface Monad<Value>{
+    map<A>(fn:(value:Value) => A): Monad<A>
+    join<A>(this:Monad<Monad<A>>): Monad<A>
+    flatMap<A>(fn:(value:Value) => Monad<A>): Monad<A>
+}
+
+interface Applicative<Value>{
+    map<A>(fn:(value:Value) => A): Applicative<A>
+    ap<A, B>(this: Applicative<(value:A) => B>, otherApplicative: Applicative<A>): Applicative<B>
+}
 
 export class List<Value> implements Monad<Value>{
     private $value: Value[]
@@ -70,18 +79,17 @@ export class List<Value> implements Monad<Value>{
         return this.traverse(of, this.identity)
     }
 
+    compactSequence<A, B extends Applicative<List<A>>>(fn:(value:Value) => Applicative<A>, filterFn:(x:Applicative<A>) => boolean, of:(value:List<A>) => B):B{
+        return this.compactMap(fn, filterFn).sequence(of)
+    }
+
     asArray():Array<Value>{
         return this.$value
     }
 
-}
-
-export function toList<A>(list:List<A>, value:A):List<A>{
-    return list.concat(value)
-}
-
-export function reduceToList<A>(arr:Array<A>):List<A>{
-    return arr.reduce(toList, List.fromArr(Array<A>()))
+    toString(separator:string = " "):string{
+        return this.asArray().join(separator)
+    }
 }
 
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
