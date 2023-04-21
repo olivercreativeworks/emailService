@@ -14,12 +14,12 @@ export namespace Email{
         return {recipients, subject, htmlBody}
     }
     
-    export function sendEmail(email:IEmail, name:string):void{
+    export function sendEmail(email:IEmail, senderDisplayName:string):void{
         const recipients = email.recipients.toString(",")
         const subject = email.subject
         const body = null
         const htmlBody = email.htmlBody
         
-        GmailApp.sendEmail(recipients, subject, body, {htmlBody, name})
+        GmailApp.sendEmail(recipients, subject, body, {htmlBody, name: senderDisplayName})
     }
 }
