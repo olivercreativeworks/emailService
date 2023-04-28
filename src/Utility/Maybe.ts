@@ -84,6 +84,19 @@ export class Maybe<Value> implements Monad<Value>{
     orElse<A>(defaultValue:A): A | Value{
         return this.isSomething() ? this.$value : defaultValue
     }
+
+    static liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, maybe1:Maybe<A>, maybe2:Maybe<B>):Maybe<C>{
+        return maybe1.map(fn).ap(maybe2)
+    }
+    static liftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3: Maybe<C>):Maybe<D>{
+        return maybe1.map(fn).ap(maybe2).ap(maybe3)
+    }
+    static curryA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D): (arg1:A) => (arg2:B) => (arg3:C) => D{
+        return (arg1:A) => (arg2:B) => (arg3:C) => fn(arg1, arg2, arg3)
+    }
+    static curryLiftA3<A,B,C,D>(fn:(arg1:A, arg2:B, arg3:C) => D, maybe1:Maybe<A>, maybe2:Maybe<B>, maybe3: Maybe<C>):Maybe<D>{
+        return Maybe.liftA3(Maybe.curryA3(fn), maybe1, maybe2, maybe3)
+    }
 }
 
 export namespace MaybeUtility{
@@ -104,7 +117,7 @@ export namespace MaybeUtility{
     }
 
     export function maybeLiftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, arg1:A, arg2:B):Maybe<C>{
-        return liftA2(fn, Maybe.of(arg1), Maybe.of(arg2))
+        return Maybe.liftA2(fn, Maybe.of(arg1), Maybe.of(arg2))
     }
     export function maybeLiftA3<A,B,C,D>(fn:(arg1:A) => (arg2:B) => (arg3:C) => D, arg1:A, arg2:B, arg3:C):Maybe<D>{
         return liftA3(fn, Maybe.of(arg1), Maybe.of(arg2), Maybe.of(arg3))
@@ -131,7 +144,5 @@ export namespace MaybeUtility{
         return maybe1.map(fn).ap(maybe2).ap(maybe3)
     }
 
-    function liftA2<A,B,C>(fn:(arg1:A) => (arg2:B) => C, maybe1:Maybe<A>, maybe2:Maybe<B>):Maybe<C>{
-        return maybe1.map(fn).ap(maybe2)
-    }
+
 }
