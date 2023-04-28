@@ -16,8 +16,10 @@ export class List<Value> implements Monad<Value>{
         this.$value = value
     }
 
-    static fromArr<A>(x: Array<A>): List<A>{
-        return new List(x)
+    static fromArr<A>(x: Array<A>): List<A>
+    static fromArr<A,B>(x:Array<A>, mapFn:(arg:A) => B): List<B>
+    static fromArr<A,B>(arr:Array<A>, mapFn?:(arg:A) => B){
+        return mapFn ? new List(Array.from(arr, mapFn)) : new List(arr)
     }
 
     static of<A>(...x:A[]): List<A>{
@@ -41,18 +43,9 @@ export class List<Value> implements Monad<Value>{
     flatMap<B>(fn:(value:Value) => List<B>): List<B>{
         return this.map(fn).join()
     }
-    private static valueIsNotNothing(x:any):boolean{
-        return !(isNothing(x))
 
-        function isNothing(x:any):boolean{
-            return x == null || x == undefined
-        }
-    }
-
-    compactMap<B>(fn:(value:Value) => B, filterFn:(x:B) => boolean = List.valueIsNotNothing): List<B>{
+    compactMap<B>(fn:(value:Value) => B, filterFn:(x:B) => boolean = valueExists): List<B>{
         return this.map(fn).filter(filterFn)
-        
-        
     }
     
     concat(...items: (Value | ConcatArray<Value>) []){
@@ -65,6 +58,16 @@ export class List<Value> implements Monad<Value>{
     reduce<A>(fn:(initialValue:A, currentValue:Value) => A, initialValue:A):A
     reduce(fn:(initialValue, currentValue) => any, initialValue?:any) {
         return initialValue ? this.$value.reduce((value, currVal) => fn(value, currVal), initialValue) : this.$value.reduce((value, currVal) => fn(value, currVal))
+    }
+
+    reduceWrap(fn:(initialValue:Value, currentValue:Value) => Value, initialValue?:Value):List<Value>
+    reduceWrap<A>(fn:(initialValue:A, currentValue:Value) => A, initialValue:A):List<A>
+    reduceWrap(fn:(initialValue, currentValue) => any, initialValue?:any) {
+        return this.isEmpty() ? this : List.of(this.reduce(fn, initialValue))
+    }
+
+    isEmpty(){
+        return this.$value.length == 0
     }
 
     traverse<A, B extends Applicative<List<A>>>(of:(value:List<A>) => B, fn: (value: Value)=> Applicative<A>): B{
@@ -90,9 +93,25 @@ export class List<Value> implements Monad<Value>{
     toString(separator:string = " "):string{
         return this.asArray().join(separator)
     }
+
+    compactMap2d<A, B>(this:List<Array<A>>, fn:(value:A) => B, filterFn:(x:B) => boolean = valueExists):List<Array<B>>{
+        return List.fromArr( this.$value.map(arr => arr.map(fn).filter(filterFn)) )
+    }
+
+    map2d<A,B>(this:List<Array<A>>, fn:(value:A) => B):List<Array<B>>{
+        return this.compactMap2d(fn, () => true)
+    }
 }
 
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => List.of(x+1, x+2)))
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().flatMap(x => List.of(x+1, x+2)))
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().map(x => x%2 == 0 ? List.of(x+1, x+2) : null))
 // console.log(List.of(List.fromArr([3,4,5]), List.fromArr([6,7,8])).join().compactMap(x => x%2 == 0 ? List.of(x+1, x+2) : null).join())
+
+function valueExists(x:any):boolean{
+    return !(isNothing(x))
+
+    function isNothing(x:any):boolean{
+        return x == null || x == undefined
+    }
+}
